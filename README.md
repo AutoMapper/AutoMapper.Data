@@ -2,3 +2,12 @@
 ================================
 
 The data extensions to AutoMapper, IDataReader support
+
+Install via initialization:
+
+```
+Mapper.Initialize(cfg => {
+   MapperRegistry.Mappers.Add(new DataReaderMapper { EnableYieldReturn = true });
+   // Other config
+});
+```
