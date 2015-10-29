@@ -2,7 +2,7 @@
     "version": "1.0.0-*",
     "description": "ADO.NET extensions for AutoMapper",
     "authors": [ "Jimmy Bogard" ],
-    "tags": [ "" ],
+    "tags": [ "AutoMapper" ],
     "projectUrl": "https://github.com/AutoMapper/AutoMapper.Data",
     "licenseUrl": "https://github.com/AutoMapper/AutoMapper.Data/blob/master/LICENSE.txt",
 
@@ -12,9 +12,16 @@
         },
         "net40": {
             "frameworkAssemblies": { "System.Data": "" }
+        },
+        "dotnet": {
+            "dependencies": {
+                "System.Data.Common": "4.0.0",
+                "System.Reflection.Emit": "4.0.0",
+                "System.Reflection.Emit.Lightweight": "4.0.0"
+            }
         }
     },
     "dependencies": {
-        "AutoMapper": "4.1.0"
+        "AutoMapper": "4.1.1"
     }
 }

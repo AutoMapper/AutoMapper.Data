@@ -11,6 +11,10 @@
     using System.Reflection.Emit;
     using Internal;
     using Mappers;
+#if DOTNET
+    using IDataRecord = System.Data.Common.DbDataReader;
+    using IDataReader = System.Data.Common.DbDataReader;
+#endif
 
     public class DataReaderMapper : IObjectMapper
     {
@@ -144,12 +148,12 @@
                     generator.Emit(OpCodes.Ldc_I4, i);
                     generator.Emit(OpCodes.Callvirt, getValueMethod);
 
-                    if (propertyInfo.PropertyType.IsGenericType
+                    if (propertyInfo.PropertyType.IsGenericType()
                         && propertyInfo.PropertyType.GetGenericTypeDefinition().Equals(typeof(Nullable<>))
                         )
                     {
                         var nullableType = propertyInfo.PropertyType.GetGenericTypeDefinition().GetGenericArguments()[0];
-                        if (!nullableType.IsEnum)
+                        if (!nullableType.IsEnum())
                             generator.Emit(OpCodes.Unbox_Any, propertyInfo.PropertyType);
                         else
                         {

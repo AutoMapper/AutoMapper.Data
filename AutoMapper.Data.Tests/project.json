@@ -1,0 +1,20 @@
+{
+    "version": "1.0.0-*",
+    "description": "AutoMapper.Data.Tests Class Library",
+    "authors": [ "Jimmy Bogard" ],
+    "tags": [ "" ],
+    "projectUrl": "",
+    "licenseUrl": "",
+
+    "dependencies": {
+        "AutoMapper.Data": "",
+        "xunit": "2.1.0",
+        "xunit.runner.dnx": "2.1.0-*"
+    },
+    "frameworks": {
+        "dnx451": {}
+    },
+    "commands": {
+        "test": "xunit.runner.dnx"
+    }
+}
