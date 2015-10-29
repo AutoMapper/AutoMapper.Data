@@ -5,6 +5,7 @@
     "tags": [ "AutoMapper" ],
     "projectUrl": "https://github.com/AutoMapper/AutoMapper.Data",
     "licenseUrl": "https://github.com/AutoMapper/AutoMapper.Data/blob/master/LICENSE.txt",
+    "iconUrl": "https://s3.amazonaws.com/automapper/icon.png",
 
     "frameworks": {
         "net45": {
