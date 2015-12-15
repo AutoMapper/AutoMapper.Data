@@ -124,6 +124,8 @@
                 return builder;
             }
 
+            var drFieldNames = new List<string>(dataRecord.FieldCount);
+            var bindingFlags = BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.Instance;
             var method = new DynamicMethod("DynamicCreate", destinationType, new[] { typeof(IDataRecord) }, destinationType, true);
             var generator = method.GetILGenerator();
 
@@ -131,52 +133,107 @@
             generator.Emit(OpCodes.Newobj, destinationType.GetConstructor(Type.EmptyTypes));
             generator.Emit(OpCodes.Stloc, result);
 
-            for (var i = 0; i < dataRecord.FieldCount; i++)
+            for (var i = 0; i<dataRecord.FieldCount; i++)
             {
-                var propertyInfo = destinationType.GetProperty(dataRecord.GetName(i), BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.Instance);
-                var endIfLabel = generator.DefineLabel();
+                drFieldNames.Add(dataRecord.GetName(i));
+                var propertyInfo = destinationType.GetProperty(dataRecord.GetName(i), bindingFlags);
+                GetSetProperty(dataRecord, generator, result, i, propertyInfo, OpCodes.Ldarg_0, null);
+            }
 
-                if (propertyInfo != null && propertyInfo.GetSetMethod(true) != null)
+            var nestedProperties = drFieldNames
+                .Where(name => name.Contains("."))
+                .OrderBy(x => x)
+                .Select(x => x.Split('.'))
+                .ToLookup(x => string.Join(".", x.Take(x.Length - 1)), element => element.Last());
+
+            foreach (var nestedProperty in nestedProperties)
+            {
+                var propInfo = destinationType.GetProperty(nestedProperty.Key, bindingFlags);
+                if (propInfo == null || !propInfo.CanWrite || propInfo.PropertyType.IsValueType())
+                    continue;
+
+                var prop = generator.DeclareLocal(propInfo.PropertyType);
+                generator.Emit(OpCodes.Newobj, propInfo.PropertyType.GetConstructor(Type.EmptyTypes));
+                generator.Emit(OpCodes.Stloc, prop);
+                var counter = generator.DeclareLocal(typeof(int));
+
+                foreach (var np in nestedProperty)
                 {
-                    generator.Emit(OpCodes.Ldarg_0);
-                    generator.Emit(OpCodes.Ldc_I4, i);
-                    generator.Emit(OpCodes.Callvirt, isDBNullMethod);
-                    generator.Emit(OpCodes.Brtrue, endIfLabel);
+                    var drIdx = drFieldNames.IndexOf($"{nestedProperty.Key}.{np}");
+                    if (drIdx == -1)
+                        continue;
 
-                    generator.Emit(OpCodes.Ldloc, result);
-                    generator.Emit(OpCodes.Ldarg_0);
-                    generator.Emit(OpCodes.Ldc_I4, i);
-                    generator.Emit(OpCodes.Callvirt, getValueMethod);
-
-                    if (propertyInfo.PropertyType.IsGenericType()
-                        && propertyInfo.PropertyType.GetGenericTypeDefinition().Equals(typeof(Nullable<>))
-                        )
-                    {
-                        var nullableType = propertyInfo.PropertyType.GetGenericTypeDefinition().GetGenericArguments()[0];
-                        if (!nullableType.IsEnum())
-                            generator.Emit(OpCodes.Unbox_Any, propertyInfo.PropertyType);
-                        else
-                        {
-                            generator.Emit(OpCodes.Unbox_Any, nullableType);
-                            generator.Emit(OpCodes.Newobj, propertyInfo.PropertyType);
-                        }
-                    }
-                    else
-                    {
-                        generator.Emit(OpCodes.Unbox_Any, dataRecord.GetFieldType(i));
-                    }
-                    generator.Emit(OpCodes.Callvirt, propertyInfo.GetSetMethod(true));
-
-                    generator.MarkLabel(endIfLabel);
+                    var innerPropInfo = propInfo.PropertyType.GetProperty(np, bindingFlags);
+                    GetSetProperty(dataRecord, generator, prop, drIdx, innerPropInfo, OpCodes.Ldarg_1, counter);
                 }
+
+                // if counter > 0 set the property to the object
+                generator.Emit(OpCodes.Ldloc, counter);
+                generator.Emit(OpCodes.Ldc_I4_0);
+                generator.Emit(OpCodes.Cgt); // counter > 0
+                generator.Emit(OpCodes.Ldc_I4_0);
+                var endIf = generator.DefineLabel();
+                generator.Emit(OpCodes.Beq_S, endIf);
+                // { result = prop;
+                generator.Emit(OpCodes.Ldloc, result);
+                generator.Emit(OpCodes.Ldloc, prop);
+                generator.Emit(OpCodes.Callvirt, propInfo.GetSetMethod(true));
+                // }
+                generator.MarkLabel(endIf);
             }
 
             generator.Emit(OpCodes.Ldloc, result);
             generator.Emit(OpCodes.Ret);
-
             builder = (Build)method.CreateDelegate(typeof(Build));
             _builderCache[builderKey] = builder;
             return builder;
+        }
+
+        private static void GetSetProperty(IDataRecord dataRecord, ILGenerator generator, LocalBuilder result, int i, PropertyInfo propertyInfo, OpCode loadArg, LocalBuilder counter)
+        {
+            var endIfLabel = generator.DefineLabel();
+
+            if (propertyInfo != null && propertyInfo.GetSetMethod(true) != null)
+            {
+                generator.Emit(OpCodes.Ldarg_0);
+                generator.Emit(OpCodes.Ldc_I4, i);
+                generator.Emit(OpCodes.Callvirt, isDBNullMethod);
+                generator.Emit(OpCodes.Brtrue, endIfLabel);
+
+                generator.Emit(OpCodes.Ldloc, result);
+                generator.Emit(OpCodes.Ldarg_0);
+                generator.Emit(OpCodes.Ldc_I4, i);
+                generator.Emit(OpCodes.Callvirt, getValueMethod);
+
+                if (propertyInfo.PropertyType.IsGenericType()
+                    && propertyInfo.PropertyType.GetGenericTypeDefinition().Equals(typeof(Nullable<>))
+                    )
+                {
+                    var nullableType = propertyInfo.PropertyType.GetGenericTypeDefinition().GetGenericArguments()[0];
+                    if (!nullableType.IsEnum())
+                        generator.Emit(OpCodes.Unbox_Any, propertyInfo.PropertyType);
+                    else
+                    {
+                        generator.Emit(OpCodes.Unbox_Any, nullableType);
+                        generator.Emit(OpCodes.Newobj, propertyInfo.PropertyType);
+                    }
+                }
+                else
+                {
+                    generator.Emit(OpCodes.Unbox_Any, dataRecord.GetFieldType(i));
+                }
+                generator.Emit(OpCodes.Callvirt, propertyInfo.GetSetMethod(true));
+
+                if(counter != null)
+                {
+                    generator.Emit(OpCodes.Ldloc, counter);
+                    generator.Emit(OpCodes.Ldc_I4_1);
+                    generator.Emit(OpCodes.Add);
+                    generator.Emit(OpCodes.Stloc, counter);
+                }
+
+                generator.MarkLabel(endIfLabel);
+            }
         }
 
         private static void MapPropertyValues(ResolutionContext context, IMappingEngineRunner mapper, object result)
