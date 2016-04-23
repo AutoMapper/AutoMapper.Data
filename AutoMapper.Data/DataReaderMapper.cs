@@ -64,7 +64,7 @@
             {
                 var configurationProvider = mapper.ConfigurationProvider;
                 TypeMap typeMap = configurationProvider.FindTypeMapFor(context.SourceType, destinationElementType);
-                resolveUsingContext = new ResolutionContext(typeMap, context.SourceValue, context.SourceType, destinationElementType, new MappingOperationOptions(), (IMappingEngine)mapper);
+                resolveUsingContext = new ResolutionContext(typeMap, context.SourceValue, context.SourceType, destinationElementType, context.Options, (IMappingEngine)mapper);
             }
 
             var buildFrom = CreateBuilder(destinationElementType, dataReader);
