@@ -435,6 +435,97 @@
         private IDataReader _dataReader;
     }
 
+    public class When_mapping_a_data_reader_to_a_dto_with_nested_dto
+    {
+        internal const string FieldName = "Integer";
+        internal const int FieldValue = 7;
+        internal const string InnerFieldName = "Inner.Descr";
+        internal const string InnerFieldName2 = "Inner.Descr2";
+        internal const string Inner2FieldName2 = "Inner2.Descr2";
+        internal const string InnerFieldValue = "Hello";
+        internal const string InnerFieldValue2 = "World";
+        internal const string Inner2FieldValue2 = "2World2";
+
+        internal class DtoInnerClass
+        {
+            public string Descr { get; set; }
+            public string Descr2 { get; set; }
+        }
+
+        internal class DtoWithNestedClass
+        {
+            public int Integer { get; set; }
+            public DtoInnerClass Inner { get; set; }
+            public DtoInnerClass Inner2 { get; set; }
+            public DtoInnerClass Inner3 { get; set; }
+        }
+
+        internal class DataBuilder
+        {
+            public IDataReader BuildDataReaderWithNestedClass()
+            {
+                var table = new DataTable();
+
+                var col = table.Columns.Add(FieldName, typeof(int));
+                col.AllowDBNull = true;
+                table.Columns.Add(InnerFieldName, typeof(string));
+                table.Columns.Add(InnerFieldName2, typeof(string));
+                table.Columns.Add("Inner2.Descr", typeof(string));
+                table.Columns.Add(Inner2FieldName2, typeof(string));
+                table.Columns.Add("Inner3.Descr", typeof(string));
+                table.Columns.Add("Inner3.Descr2", typeof(string));
+
+                var row1 = table.NewRow();
+                row1[FieldName] = FieldValue;
+                row1[InnerFieldName] = InnerFieldValue;
+                row1[InnerFieldName2] = InnerFieldValue2;
+                row1["Inner2.Descr"] = null;
+                row1[Inner2FieldName2] = Inner2FieldValue2;
+                row1["Inner3.Descr"] = null;
+                row1["Inner3.Descr2"] = null;
+                table.Rows.Add(row1);
+
+                return table.CreateDataReader();
+            }
+        }
+
+        public When_mapping_a_data_reader_to_a_dto_with_nested_dto()
+        {
+            Mapper.Initialize(cfg => {
+                MapperRegistry.Mappers.Insert(0, new DataReaderMapper());
+                cfg.CreateMap<IDataReader, DtoWithNestedClass>();
+            });
+
+            _dataReader = new DataBuilder().BuildDataReaderWithNestedClass();
+        }
+
+        [Fact]
+        public void Then_results_should_be_as_expected()
+        {
+            while (_dataReader.Read())
+            {
+                var dto = Mapper.Map<IDataReader, DtoWithNestedClass>(_dataReader);
+
+                dto.Integer.ShouldEqual(FieldValue);
+
+                // nested property
+                dto.Inner.ShouldNotBeNull();
+                dto.Inner.Descr.ShouldEqual(InnerFieldValue);
+                dto.Inner.Descr2.ShouldEqual(InnerFieldValue2);
+
+                // more than one property
+                dto.Inner2.ShouldNotBeNull();
+                dto.Inner2.Descr.ShouldBeNull(); // null
+                dto.Inner2.Descr2.ShouldEqual(Inner2FieldValue2);
+
+                // no Inner3 properties are set so the Inner3 property is null
+                dto.Inner3.ShouldBeNull();
+            }
+        }
+
+        private IDataReader _dataReader;
+    }
+
     internal class FieldName
     {
         public const String SmallInt = "SmallInteger";

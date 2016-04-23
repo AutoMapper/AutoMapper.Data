@@ -22,5 +22,14 @@
             return type.IsGenericType;
 #endif
         }
+
+        public static bool IsValueType(this Type type)
+        {
+#if DOTNET
+            return type.GetTypeInfo().IsValueType;
+#else
+            return type.IsValueType;
+#endif
+        }
     }
 }
