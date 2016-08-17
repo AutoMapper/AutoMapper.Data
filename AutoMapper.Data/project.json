@@ -23,6 +23,6 @@
         }
     },
     "dependencies": {
-        "AutoMapper": "4.1.1"
+        "AutoMapper": "4.2.1"
     }
 }
