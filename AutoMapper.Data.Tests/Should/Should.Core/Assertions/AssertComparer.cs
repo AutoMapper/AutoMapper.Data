@@ -1,11 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 namespace Should.Core.Assertions
 {
-    using AutoMapper.Internal;
-
     internal class AssertComparer<T> : IComparer<T>
     {
         public int Compare(T x, T y)

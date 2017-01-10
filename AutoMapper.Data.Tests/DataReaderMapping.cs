@@ -14,8 +14,10 @@
         {
             Mapper.Initialize(cfg =>
             {
-                MapperRegistry.Mappers.Insert(0, new DataReaderMapper { YieldReturnEnabled = YieldReturnEnabled });
-                cfg.CreateMap<IDataReader, DTOObject>()
+                cfg.Mappers.Insert(0, new DataReaderMapper { YieldReturnEnabled = YieldReturnEnabled });
+                cfg.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
+
+                cfg.CreateMap<IDataRecord, DTOObject>()
                     .ForMember(dest => dest.Else, options => options.MapFrom(src => src.GetDateTime(10)));
             });
 
@@ -108,10 +110,11 @@
         {
             Mapper.Initialize(cfg =>
             {
-                MapperRegistry.Mappers.Insert(0, new DataReaderMapper());
-                cfg.CreateMap<IDataReader, DTOObject>()
+                cfg.Mappers.Insert(0, new DataReaderMapper());
+                cfg.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
+                cfg.CreateMap<IDataRecord, DTOObject>()
                     .ForMember(dest => dest.Else, options => options.MapFrom(src => src.GetDateTime(10)));
-                cfg.CreateMap<IDataReader, DerivedDTOObject>()
+                cfg.CreateMap<IDataRecord, DerivedDTOObject>()
                     .ForMember(dest => dest.Else, options => options.MapFrom(src => src.GetDateTime(10)));
             });
 
@@ -144,7 +147,7 @@
         }
     }
 
-    public class When_mapping_a_data_reader_using_the_default_coniguration : When_mapping_a_data_reader_to_a_dto
+    public class When_mapping_a_data_reader_using_the_default_configuration : When_mapping_a_data_reader_to_a_dto
     {
         [Fact]
         public void Then_the_enumerable_should_be_a_list()
@@ -168,7 +171,7 @@
     {
         public When_mapping_a_data_reader_to_a_dto_and_the_map_does_not_exist()
         {
-            Mapper.Initialize(cfg => MapperRegistry.Mappers.Insert(0, new DataReaderMapper()));
+            Mapper.Initialize(cfg => cfg.Mappers.Insert(0, new DataReaderMapper()));
             _dataReader = new DataBuilder().BuildDataReader();
         }
 
@@ -198,7 +201,8 @@
         {
             Mapper.Initialize(cfg =>
             {
-                MapperRegistry.Mappers.Insert(0, new DataReaderMapper());
+                cfg.Mappers.Insert(0, new DataReaderMapper());
+                cfg.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
                 cfg.CreateMap<IDataRecord, DTOObject>()
                     .ForMember(dest => dest.Else, options => options.MapFrom(src => src.GetDateTime(src.GetOrdinal(FieldName.Something))));
             });
@@ -317,7 +321,8 @@
         public When_mapping_a_data_reader_to_a_dto_with_nullable_field()
         {
             Mapper.Initialize(cfg => {
-                MapperRegistry.Mappers.Insert(0, new DataReaderMapper());
+                cfg.Mappers.Insert(0, new DataReaderMapper());
+                cfg.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
                 cfg.CreateMap<IDataReader, DtoWithSingleNullableField>();
             });
 
@@ -395,9 +400,8 @@
         public When_mapping_a_data_reader_to_a_dto_with_nullable_enum()
         {
             Mapper.Initialize(cfg => {
-                MapperRegistry.Mappers.Insert(0, new DataReaderMapper());
-
-                cfg.CreateMap<IDataReader, DtoWithSingleNullableField>();
+                cfg.Mappers.Insert(0, new DataReaderMapper());
+                cfg.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
             });
 
             _dataReader = new DataBuilder().BuildDataReaderWithNullableField();
@@ -492,8 +496,10 @@
         public When_mapping_a_data_reader_to_a_dto_with_nested_dto()
         {
             Mapper.Initialize(cfg => {
-                MapperRegistry.Mappers.Insert(0, new DataReaderMapper());
-                cfg.CreateMap<IDataReader, DtoWithNestedClass>();
+                cfg.Mappers.Insert(0, new DataReaderMapper());
+                
+                cfg.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
+                cfg.CreateMap<IDataRecord, DtoWithNestedClass>();
             });
 
             _dataReader = new DataBuilder().BuildDataReaderWithNestedClass();
