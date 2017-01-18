@@ -2,10 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace AutoMapper.Data
+namespace AutoMapper.Data.Utils
 {
     public class DataReaderEnumerableAdapter : IEnumerable<IDataRecord>
     {

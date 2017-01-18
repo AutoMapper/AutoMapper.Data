@@ -5,12 +5,12 @@ using System.Reflection;
 using System.Reflection.Emit;
 using AutoMapper;
 using AutoMapper.Configuration.Conventions;
+using AutoMapper.Data.Utils;
 using AutoMapper.Utils;
-using TypeExtensions = AutoMapper.Utils.TypeExtensions;
 using static System.Reflection.Emit.OpCodes;
-using System.Linq.Expressions;
+using TypeExtensions = AutoMapper.Utils.TypeExtensions;
 
-namespace AutoMapper.Data
+namespace AutoMapper.Data.Configuration.Conventions
 {
     public class DataRecordMemberConfiguration : IChildMemberConfiguration
     {
