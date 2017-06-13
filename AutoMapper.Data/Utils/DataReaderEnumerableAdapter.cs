@@ -7,7 +7,7 @@ namespace AutoMapper.Data.Utils
 {
     public class DataReaderEnumerableAdapter : IEnumerable<IDataRecord>
     {
-        private IDataReader _reader;
+        private readonly IDataReader _reader;
 
         public DataReaderEnumerableAdapter(IDataReader reader)
         {
@@ -28,7 +28,7 @@ namespace AutoMapper.Data.Utils
     public class DataReaderEnumerator : IEnumerator<IDataRecord>
     {
         private IDataReader _reader;
-        private bool disposedValue = false; // To detect redundant calls
+        private bool _disposedValue; // To detect redundant calls
 
         public DataReaderEnumerator(IDataReader reader)
         {
@@ -49,11 +49,11 @@ namespace AutoMapper.Data.Utils
         #region IDisposable Support
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 _reader = null;
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 

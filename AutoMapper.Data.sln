@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "AutoMapper.Data", "AutoMapper.Data\AutoMapper.Data.xproj", "{C41E7BE2-1573-4EB1-96D2-ABEBD21ABFA8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMapper.Data", "AutoMapper.Data\AutoMapper.Data.csproj", "{C41E7BE2-1573-4EB1-96D2-ABEBD21ABFA8}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "AutoMapper.Data.Tests", "AutoMapper.Data.Tests\AutoMapper.Data.Tests.xproj", "{850F7421-F1AC-43CE-9FB2-207FD42425D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMapper.Data.Tests", "AutoMapper.Data.Tests\AutoMapper.Data.Tests.csproj", "{850F7421-F1AC-43CE-9FB2-207FD42425D1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
