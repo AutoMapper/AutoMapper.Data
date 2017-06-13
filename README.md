@@ -7,7 +7,7 @@ Install via initialization:
 
 ```
 Mapper.Initialize(cfg => {
-   MapperRegistry.Mappers.Add(new DataReaderMapper { EnableYieldReturn = true });
+   cfg.AddDataReaderMapping();
    // Other config
 });
 ```

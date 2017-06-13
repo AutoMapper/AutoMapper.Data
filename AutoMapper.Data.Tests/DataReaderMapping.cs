@@ -15,8 +15,7 @@
         {
             Mapper.Initialize(cfg =>
             {
-                cfg.Mappers.Insert(0, new DataReaderMapper { YieldReturnEnabled = YieldReturnEnabled });
-                cfg.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
+                cfg.AddDataReaderMapping(YieldReturnEnabled);
 
                 cfg.CreateMap<IDataRecord, DTOObject>()
                     .ForMember(dest => dest.Else, options => options.MapFrom(src => src.GetDateTime(10)));
