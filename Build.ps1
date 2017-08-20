@@ -26,11 +26,12 @@ if(Test-Path .\artifacts) { Remove-Item .\artifacts -Force -Recurse }
 
 exec { & dotnet restore }
 
-$tag = $(git tag -l --points-at HEAD)
+$branch = @{ $true = $env:APPVEYOR_REPO_BRANCH; $false = $(git symbolic-ref --short -q HEAD) }[$env:APPVEYOR_REPO_BRANCH -ne $NULL];
 $revision = @{ $true = "{0:00000}" -f [convert]::ToInt32("0" + $env:APPVEYOR_BUILD_NUMBER, 10); $false = "local" }[$env:APPVEYOR_BUILD_NUMBER -ne $NULL];
-$suffix = @{ $true = ""; $false = "ci-$revision"}[$tag -ne $NULL -and $revision -ne "local"]
+$suffix = @{ $true = ""; $false = "$($branch.Substring(0, [math]::Min(10,$branch.Length)))-$revision"}[$branch -eq "master" -and $revision -ne "local"]
 $commitHash = $(git rev-parse --short HEAD)
 $buildSuffix = @{ $true = "$($suffix)-$($commitHash)"; $false = "$($branch)-$($commitHash)" }[$suffix -ne ""]
+$versionSuffix = @{ $true = "--version-suffix=$($suffix)"; $false = ""}[$suffix -ne ""]
 
 exec { & dotnet build AutoMapper.Data.sln -c Release --version-suffix=$buildSuffix -v q /nologo }
 
@@ -40,6 +41,6 @@ exec { & dotnet xunit -configuration Release }
 
 Pop-Location
 
-exec { & dotnet pack .\AutoMapper.Data\AutoMapper.Data.csproj -c Release -o ..\artifacts --include-symbols --no-build --version-suffix=$suffix }
+exec { & dotnet pack .\AutoMapper.Data -c Release -o ..\artifacts --include-symbols --no-build $versionSuffix }
 
 
