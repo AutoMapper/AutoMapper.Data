@@ -44,6 +44,7 @@ namespace AutoMapper.Data.Configuration.Conventions
             var returnValueLocal = il.DeclareLocal(returnType);
             var tryGetValueMethod = DataReaderHelper.TryGetValueMethod;
             var dbNullElseLabel = il.DefineLabel();
+            var dbNullLabel = il.DefineLabel();
             var endIfDbNullLabel = il.DefineLabel();
             var getDbNullValueField = DataReaderHelper.DbNullValueField;
 
@@ -94,12 +95,18 @@ namespace AutoMapper.Data.Configuration.Conventions
 
             il.Emit(Pop);
 
-            // Test if field value == DBNull
+            // Test if field value == null
+            il.Emit(Ldloc, fieldValueLocal);
+            il.Emit(Ldnull);
+            il.Emit(Beq_S, dbNullLabel);
+
+            // Test if field value == DBNull (skipped when source field does not exist)
             il.Emit(Ldloc, fieldValueLocal);
             il.Emit(Ldsfld, getDbNullValueField);
             il.Emit(Bne_Un_S, dbNullElseLabel);
 
             // If so...
+            il.MarkLabel(dbNullLabel);
             il.Emit(Ldloca_S, returnValueLocal);
             il.Emit(Initobj, destMemberType);
             il.Emit(Br_S, endIfDbNullLabel);
