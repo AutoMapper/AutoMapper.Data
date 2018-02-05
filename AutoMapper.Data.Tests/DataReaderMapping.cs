@@ -6,7 +6,7 @@
     using System.Linq;
     using Configuration.Conventions;
     using Mappers;
-    using Should;
+    using Shouldly;
     using Xunit;
 
     public class When_mapping_a_data_reader_to_a_dto
@@ -29,67 +29,67 @@
         [Fact]
         public void Then_a_column_containing_a_small_integer_should_be_read()
         {
-            Result.SmallInteger.ShouldEqual(DataReader[FieldName.SmallInt]);
+            Result.SmallInteger.ShouldBe(DataReader[FieldName.SmallInt]);
         }
 
         [Fact]
         public void Then_a_column_containing_an_integer_should_be_read()
         {
-            Result.Integer.ShouldEqual(DataReader[FieldName.Int]);
+            Result.Integer.ShouldBe(DataReader[FieldName.Int]);
         }
 
         [Fact]
         public void Then_a_column_containing_a_big_integer_should_be_read()
         {
-            Result.BigInteger.ShouldEqual(DataReader[FieldName.BigInt]);
+            Result.BigInteger.ShouldBe(DataReader[FieldName.BigInt]);
         }
 
         [Fact]
         public void Then_a_column_containing_a_GUID_should_be_read()
         {
-            Result.Guid.ShouldEqual(DataReader[FieldName.Guid]);
+            Result.Guid.ShouldBe(DataReader[FieldName.Guid]);
         }
 
         [Fact]
         public void Then_a_column_containing_a_float_should_be_read()
         {
-            Result.Float.ShouldEqual(DataReader[FieldName.Float]);
+            Result.Float.ShouldBe(DataReader[FieldName.Float]);
         }
 
         [Fact]
         public void Then_a_column_containing_a_double_should_be_read()
         {
-            Result.Double.ShouldEqual(DataReader[FieldName.Double]);
+            Result.Double.ShouldBe(DataReader[FieldName.Double]);
         }
 
         [Fact]
         public void Then_a_column_containing_a_decimal_should_be_read()
         {
-            Result.Decimal.ShouldEqual(DataReader[FieldName.Decimal]);
+            Result.Decimal.ShouldBe(DataReader[FieldName.Decimal]);
         }
 
         [Fact]
         public void Then_a_column_containing_a_date_and_time_should_be_read()
         {
-            Result.DateTime.ShouldEqual(DataReader[FieldName.DateTime]);
+            Result.DateTime.ShouldBe(DataReader[FieldName.DateTime]);
         }
 
         [Fact]
         public void Then_a_column_containing_a_byte_should_be_read()
         {
-            Result.Byte.ShouldEqual(DataReader[FieldName.Byte]);
+            Result.Byte.ShouldBe(DataReader[FieldName.Byte]);
         }
 
         [Fact]
         public void Then_a_column_containing_a_boolean_should_be_read()
         {
-            Result.Boolean.ShouldEqual(DataReader[FieldName.Boolean]);
+            Result.Boolean.ShouldBe(DataReader[FieldName.Boolean]);
         }
 
         [Fact]
         public void Then_a_projected_column_should_be_read()
         {
-            Result.Else.ShouldEqual(DataReader.GetDateTime(10));
+            Result.Else.ShouldBe(DataReader.GetDateTime(10));
         }
 
         [Fact]
@@ -125,7 +125,7 @@
         public void Should_map_successfully()
         {
             var result = Mapper.Map<IDataReader, IEnumerable<DerivedDTOObject>>(new DataBuilder().BuildDataReader());
-            result.Count().ShouldEqual(1);
+            result.Count().ShouldBe(1);
         }
 
         [Fact]
@@ -152,7 +152,7 @@
         [Fact]
         public void Then_the_enumerable_should_be_a_list()
         {
-            Results.ShouldImplement<IList<DTOObject>>();
+            Results.ShouldBeAssignableTo<IList<DTOObject>>();
         }
     }
 
@@ -214,67 +214,67 @@
         [Fact]
         public void Then_a_column_containing_a_small_integer_should_be_read()
         {
-            _result.SmallInteger.ShouldEqual(_dataRecord[FieldName.SmallInt]);
+            _result.SmallInteger.ShouldBe(_dataRecord[FieldName.SmallInt]);
         }
 
         [Fact]
         public void Then_a_column_containing_an_integer_should_be_read()
         {
-            _result.Integer.ShouldEqual(_dataRecord[FieldName.Int]);
+            _result.Integer.ShouldBe(_dataRecord[FieldName.Int]);
         }
 
         [Fact]
         public void Then_a_column_containing_a_big_integer_should_be_read()
         {
-            _result.BigInteger.ShouldEqual(_dataRecord[FieldName.BigInt]);
+            _result.BigInteger.ShouldBe(_dataRecord[FieldName.BigInt]);
         }
 
         [Fact]
         public void Then_a_column_containing_a_GUID_should_be_read()
         {
-            _result.Guid.ShouldEqual(_dataRecord[FieldName.Guid]);
+            _result.Guid.ShouldBe(_dataRecord[FieldName.Guid]);
         }
 
         [Fact]
         public void Then_a_column_containing_a_float_should_be_read()
         {
-            _result.Float.ShouldEqual(_dataRecord[FieldName.Float]);
+            _result.Float.ShouldBe(_dataRecord[FieldName.Float]);
         }
 
         [Fact]
         public void Then_a_column_containing_a_double_should_be_read()
         {
-            _result.Double.ShouldEqual(_dataRecord[FieldName.Double]);
+            _result.Double.ShouldBe(_dataRecord[FieldName.Double]);
         }
 
         [Fact]
         public void Then_a_column_containing_a_decimal_should_be_read()
         {
-            _result.Decimal.ShouldEqual(_dataRecord[FieldName.Decimal]);
+            _result.Decimal.ShouldBe(_dataRecord[FieldName.Decimal]);
         }
 
         [Fact]
         public void Then_a_column_containing_a_date_and_time_should_be_read()
         {
-            _result.DateTime.ShouldEqual(_dataRecord[FieldName.DateTime]);
+            _result.DateTime.ShouldBe(_dataRecord[FieldName.DateTime]);
         }
 
         [Fact]
         public void Then_a_column_containing_a_byte_should_be_read()
         {
-            _result.Byte.ShouldEqual(_dataRecord[FieldName.Byte]);
+            _result.Byte.ShouldBe(_dataRecord[FieldName.Byte]);
         }
 
         [Fact]
         public void Then_a_column_containing_a_boolean_should_be_read()
         {
-            _result.Boolean.ShouldEqual(_dataRecord[FieldName.Boolean]);
+            _result.Boolean.ShouldBe(_dataRecord[FieldName.Boolean]);
         }
 
         [Fact]
         public void Then_a_projected_column_should_be_read()
         {
-            _result.Else.ShouldEqual(_dataRecord[FieldName.Something]);
+            _result.Else.ShouldBe(_dataRecord[FieldName.Something]);
         }
 
         [Fact]
@@ -337,13 +337,13 @@
                 var dto = Mapper.Map<IDataReader, DtoWithSingleNullableField>(_dataReader);
 
                 if (_dataReader.IsDBNull(0))
-                    dto.Integer.HasValue.ShouldEqual(false);
+                    dto.Integer.HasValue.ShouldBe(false);
                 else
                 {
                     // uncomment the following line to see some strange fail message that might be the key to the problem
-                    dto.Integer.HasValue.ShouldEqual(true);
+                    dto.Integer.HasValue.ShouldBe(true);
 
-                    dto.Integer.Value.ShouldEqual(FieldValue);
+                    dto.Integer.Value.ShouldBe(FieldValue);
                 }
             }
         }
@@ -425,7 +425,7 @@
                 {
                     dto.Value.HasValue.ShouldBeTrue();
 
-                    dto.Value.Value.ShouldEqual(settlement_type.Prepayment);
+                    dto.Value.Value.ShouldBe(settlement_type.Prepayment);
                 }
             }
         }
@@ -512,17 +512,17 @@
             {
                 var dto = Mapper.Map<IDataReader, DtoWithNestedClass>(_dataReader);
 
-                dto.Integer.ShouldEqual(FieldValue);
+                dto.Integer.ShouldBe(FieldValue);
 
                 // nested property
                 dto.Inner.ShouldNotBeNull();
-                dto.Inner.Descr.ShouldEqual(InnerFieldValue);
-                dto.Inner.Descr2.ShouldEqual(InnerFieldValue2);
+                dto.Inner.Descr.ShouldBe(InnerFieldValue);
+                dto.Inner.Descr2.ShouldBe(InnerFieldValue2);
 
                 // more than one property
                 dto.Inner2.ShouldNotBeNull();
                 dto.Inner2.Descr.ShouldBeNull(); // null
-                dto.Inner2.Descr2.ShouldEqual(Inner2FieldValue2);
+                dto.Inner2.Descr2.ShouldBe(Inner2FieldValue2);
 
                 // no Inner3 properties are set so the Inner3 property is null
                 dto.Inner3.ShouldBeNull();
