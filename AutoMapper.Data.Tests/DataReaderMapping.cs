@@ -532,6 +532,65 @@
         private IDataReader _dataReader;
     }
 
+    public class When_mapping_a_data_reader_to_a_dto_with_missing_columns_in_data_reader
+    {
+        internal const string FieldName = "Integer";
+        internal const int FieldValue = 7;
+
+        internal class DtoWithMoreColumnsThanDataReader
+        {
+            public int Integer { get; set; }
+            public int Integer2 { get; set; }
+            public string String1 { get; set; }
+        }
+
+        internal class DataBuilder
+        {
+            public IDataReader BuildDataReaderWithMissingColumns()
+            {
+                var table = new DataTable();
+
+                var col = table.Columns.Add(FieldName, typeof(int));
+                col.AllowDBNull = true;
+
+                var row1 = table.NewRow();
+                row1[FieldName] = FieldValue;
+                table.Rows.Add(row1);
+
+                return table.CreateDataReader();
+            }
+        }
+
+        public When_mapping_a_data_reader_to_a_dto_with_missing_columns_in_data_reader()
+        {
+            Mapper.Initialize(cfg => {
+                cfg.Mappers.Insert(0, new DataReaderMapper());
+
+                cfg.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
+                cfg.CreateMap<IDataRecord, DtoWithMoreColumnsThanDataReader>();
+            });
+
+            _dataReader = new DataBuilder().BuildDataReaderWithMissingColumns();
+        }
+
+        [Fact]
+        public void Then_results_should_be_as_expected()
+        {
+            while (_dataReader.Read())
+            {
+                var dto = Mapper.Map<IDataReader, DtoWithMoreColumnsThanDataReader>(_dataReader);
+
+                dto.Integer.ShouldBe(FieldValue);
+
+                // missing column
+                dto.Integer2.ShouldBe(0);
+                dto.String1.ShouldBeNull();
+            }
+        }
+
+        private IDataReader _dataReader;
+    }
+
     internal class FieldName
     {
         public const String SmallInt = "SmallInteger";
