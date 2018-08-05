@@ -1,12 +1,12 @@
 ﻿namespace AutoMapper.Data.Tests
 {
-    using Configuration.Conventions;
-    using Mappers;
-    using Shouldly;
     using System;
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
+    using Configuration.Conventions;
+    using Mappers;
+    using Shouldly;
     using Xunit;
 
     public class When_mapping_a_data_reader_to_a_dto

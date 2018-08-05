@@ -1,11 +1,11 @@
-﻿using AutoMapper.Data.Utils;
-using AutoMapper.Mappers.Internal;
-using AutoMapper.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq.Expressions;
 using System.Reflection;
+using AutoMapper.Data.Utils;
+using AutoMapper.Mappers.Internal;
+using AutoMapper.Utils;
 using static System.Linq.Expressions.Expression;
 using ExpressionExtensions = AutoMapper.Utils.ExpressionExtensions;
 using TypeHelper = AutoMapper.Utils.TypeHelper;

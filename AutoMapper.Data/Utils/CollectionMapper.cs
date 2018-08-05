@@ -1,9 +1,9 @@
-using AutoMapper.Execution;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using static AutoMapper.Utils.ExpressionExtensions;
+using AutoMapper.Execution;
 using static System.Linq.Expressions.Expression;
+using static AutoMapper.Utils.ExpressionExtensions;
 
 namespace AutoMapper.Utils
 {
