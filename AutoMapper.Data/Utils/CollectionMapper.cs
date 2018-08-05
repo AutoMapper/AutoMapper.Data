@@ -1,9 +1,9 @@
+using AutoMapper.Execution;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using AutoMapper.Execution;
-using static System.Linq.Expressions.Expression;
 using static AutoMapper.Utils.ExpressionExtensions;
+using static System.Linq.Expressions.Expression;
 
 namespace AutoMapper.Utils
 {
@@ -50,7 +50,7 @@ namespace AutoMapper.Utils
             {
                 return checkNull;
             }
-            var checkContext = TypeMapPlanBuilder.CheckContext(elementTypeMap, contextExpression);
+            var checkContext = ExpressionBuilder.CheckContext(elementTypeMap, contextExpression);
             if(checkContext == null)
             {
                 return checkNull;
@@ -83,7 +83,7 @@ namespace AutoMapper.Utils
 
             var typePair = new TypePair(sourceElementType, destElementType);
 
-            var itemExpr = TypeMapPlanBuilder.MapExpression(configurationProvider, profileMap, typePair, itemParam, contextParam, propertyMap);
+            var itemExpr = ExpressionBuilder.MapExpression(configurationProvider, profileMap, typePair, itemParam, contextParam, propertyMap);
             return ToType(itemExpr, destElementType);
         }
 
@@ -100,8 +100,8 @@ namespace AutoMapper.Utils
             itemParam = Parameter(sourceElementType, "item");
             var destElementType = typeof(KeyValuePair<,>).MakeGenericType(destElementTypes);
 
-            var keyExpr = TypeMapPlanBuilder.MapExpression(configurationProvider, profileMap, typePairKey, Property(itemParam, "Key"), contextParam, propertyMap);
-            var valueExpr = TypeMapPlanBuilder.MapExpression(configurationProvider, profileMap, typePairValue, Property(itemParam, "Value"), contextParam, propertyMap);
+            var keyExpr = ExpressionBuilder.MapExpression(configurationProvider, profileMap, typePairKey, Property(itemParam, "Key"), contextParam, propertyMap);
+            var valueExpr = ExpressionBuilder.MapExpression(configurationProvider, profileMap, typePairValue, Property(itemParam, "Value"), contextParam, propertyMap);
             var keyPair = New(destElementType.GetConstructors().First(), keyExpr, valueExpr);
             return keyPair;
         }

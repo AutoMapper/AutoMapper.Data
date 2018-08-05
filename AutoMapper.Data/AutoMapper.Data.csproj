@@ -11,10 +11,11 @@
     <PackageIconUrl>https://s3.amazonaws.com/automapper/icon.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/AutoMapper/AutoMapper.Data</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/AutoMapper/AutoMapper.Data/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="6.1.1" />
+    <PackageReference Include="AutoMapper" Version="7.0.1" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
