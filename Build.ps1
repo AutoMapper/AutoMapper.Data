@@ -37,7 +37,7 @@ exec { & dotnet build AutoMapper.Data.sln -c Release --version-suffix=$buildSuff
 
 Push-Location -Path .\AutoMapper.Data.Tests
 
-exec { & dotnet xunit -configuration Release -nobuild --fx-version 2.0.0 }
+exec { & dotnet test -c Release --no-build }
 
 Pop-Location
 
