@@ -4,9 +4,8 @@ using System.Data;
 using System.Linq.Expressions;
 using System.Reflection;
 using AutoMapper.Data.Utils;
-using AutoMapper.Utils;
-using AutoMapper.Internal;
 using AutoMapper.Mappers.Internal;
+using AutoMapper.Utils;
 using static System.Linq.Expressions.Expression;
 using ExpressionExtensions = AutoMapper.Utils.ExpressionExtensions;
 using TypeHelper = AutoMapper.Utils.TypeHelper;
@@ -32,7 +31,7 @@ namespace AutoMapper.Data.Mappers
 
                 try
                 {
-                    itemExpr = CollectionMapperExpressionFactory.MapItemExpr(configurationProvider, profileMap, propertyMap, typeof(IEnumerable<IDataRecord>), destExpression.Type, contextExpression, out itemParam);
+                    itemExpr = CollectionMapperExpressionFactory.MapItemExpr(configurationProvider, profileMap, typeof(IEnumerable<IDataRecord>), destExpression.Type, contextExpression, out itemParam);
                 }
                 catch (Exception ex)
                 {
