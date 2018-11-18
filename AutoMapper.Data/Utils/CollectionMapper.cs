@@ -12,7 +12,7 @@ namespace AutoMapper.Utils
     public static class CollectionMapperExtensions
     {
         internal static Expression MapCollectionExpression(this IConfigurationProvider configurationProvider, 
-           ProfileMap profileMap, PropertyMap propertyMap, Expression sourceExpression,
+           ProfileMap profileMap, IMemberMap memberMap, Expression sourceExpression,
            Expression destExpression, Expression contextExpression, Func<Expression, Expression> conditionalExpression, Type ifInterfaceType, MapItem mapItem)
         {
             var passedDestination = Variable(destExpression.Type, "passedDestination");
@@ -21,12 +21,12 @@ namespace AutoMapper.Utils
             var sourceElementType = TypeHelper.GetElementType(sourceExpression.Type);
             ParameterExpression itemParam;
 
-            var itemExpr = mapItem(configurationProvider, profileMap, propertyMap, sourceExpression.Type, passedDestination.Type, contextExpression, out itemParam);
+            var itemExpr = mapItem(configurationProvider, profileMap, memberMap, sourceExpression.Type, passedDestination.Type, contextExpression, out itemParam);
 
             var destinationElementType = itemExpr.Type;
             var destinationCollectionType = typeof(ICollection<>).MakeGenericType(destinationElementType);
             var addMethod = destinationCollectionType.GetDeclaredMethod("Add");
-            var destination = propertyMap?.UseDestinationValue == true ? passedDestination : newExpression;
+            var destination = memberMap?.UseDestinationValue == true ? passedDestination : newExpression;
             var addItems = ForEach(sourceExpression, itemParam, Call(destination, addMethod, itemExpr));
 
             var mapExpr = Block(addItems, destination);
@@ -41,7 +41,7 @@ namespace AutoMapper.Utils
                                     Assign(newExpression, passedDestination.Type.NewExpr(ifInterfaceType))),
                     Condition(Equal(sourceExpression, Constant(null)), ToType(ifNullExpr, passedDestination.Type), ToType(mapExpr, passedDestination.Type))
                 );
-            if(propertyMap != null)
+            if(memberMap != null)
             {
                 return checkNull;
             }
@@ -72,10 +72,10 @@ namespace AutoMapper.Utils
         }
 
         public delegate Expression MapItem(IConfigurationProvider configurationProvider, ProfileMap profileMap,
-            PropertyMap propertyMap, Type sourceType, Type destType, Expression contextParam, out ParameterExpression itemParam);
+            IMemberMap memberMap, Type sourceType, Type destType, Expression contextParam, out ParameterExpression itemParam);
 
         internal static Expression MapItemExpr(this IConfigurationProvider configurationProvider, ProfileMap profileMap,
-            PropertyMap propertyMap, Type sourceType, Type destType, Expression contextParam, out ParameterExpression itemParam)
+            IMemberMap memberMap, Type sourceType, Type destType, Expression contextParam, out ParameterExpression itemParam)
         {
             var sourceElementType = TypeHelper.GetElementType(sourceType);
             var destElementType = TypeHelper.GetElementType(destType);
@@ -83,12 +83,12 @@ namespace AutoMapper.Utils
 
             var typePair = new TypePair(sourceElementType, destElementType);
 
-            var itemExpr = ExpressionBuilder.MapExpression(configurationProvider, profileMap, typePair, itemParam, contextParam, propertyMap);
+            var itemExpr = ExpressionBuilder.MapExpression(configurationProvider, profileMap, typePair, itemParam, contextParam, memberMap);
             return ToType(itemExpr, destElementType);
         }
 
         internal static Expression MapKeyPairValueExpr(this IConfigurationProvider configurationProvider,
-            ProfileMap profileMap, PropertyMap propertyMap, Type sourceType, Type destType, Expression contextParam, out ParameterExpression itemParam)
+            ProfileMap profileMap, IMemberMap memberMap, Type sourceType, Type destType, Expression contextParam, out ParameterExpression itemParam)
         {
             var sourceElementTypes = TypeHelper.GetElementTypes(sourceType, ElementTypeFlags.BreakKeyValuePair);
             var destElementTypes = TypeHelper.GetElementTypes(destType, ElementTypeFlags.BreakKeyValuePair);
@@ -100,8 +100,8 @@ namespace AutoMapper.Utils
             itemParam = Parameter(sourceElementType, "item");
             var destElementType = typeof(KeyValuePair<,>).MakeGenericType(destElementTypes);
 
-            var keyExpr = ExpressionBuilder.MapExpression(configurationProvider, profileMap, typePairKey, Property(itemParam, "Key"), contextParam, propertyMap);
-            var valueExpr = ExpressionBuilder.MapExpression(configurationProvider, profileMap, typePairValue, Property(itemParam, "Value"), contextParam, propertyMap);
+            var keyExpr = ExpressionBuilder.MapExpression(configurationProvider, profileMap, typePairKey, Property(itemParam, "Key"), contextParam, memberMap);
+            var valueExpr = ExpressionBuilder.MapExpression(configurationProvider, profileMap, typePairValue, Property(itemParam, "Value"), contextParam, memberMap);
             var keyPair = New(destElementType.GetConstructors().First(), keyExpr, valueExpr);
             return keyPair;
         }
@@ -116,7 +116,7 @@ namespace AutoMapper.Utils
     {
         public bool IsMatch(TypePair context) => context.SourceType.IsEnumerableType() && context.DestinationType.IsCollectionType();
 
-        public Expression MapExpression(IConfigurationProvider configurationProvider, ProfileMap profileMap, PropertyMap propertyMap, Expression sourceExpression, Expression destExpression, Expression contextExpression)
-            => configurationProvider.MapCollectionExpression(profileMap, propertyMap, sourceExpression, destExpression, contextExpression, CollectionMapperExtensions.IfNotNull, typeof(List<>), CollectionMapperExtensions.MapItemExpr);
+        public Expression MapExpression(IConfigurationProvider configurationProvider, ProfileMap profileMap, IMemberMap memberMap, Expression sourceExpression, Expression destExpression, Expression contextExpression)
+            => configurationProvider.MapCollectionExpression(profileMap, memberMap, sourceExpression, destExpression, contextExpression, CollectionMapperExtensions.IfNotNull, typeof(List<>), CollectionMapperExtensions.MapItemExpr);
     }
 }

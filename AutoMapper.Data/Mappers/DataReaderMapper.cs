@@ -20,7 +20,7 @@ namespace AutoMapper.Data.Mappers
             => IsDataReader(context.SourceType, context.DestinationType);
 
         public Expression MapExpression(IConfigurationProvider configurationProvider, ProfileMap profileMap,
-            PropertyMap propertyMap, Expression sourceExpression, Expression destExpression, Expression contextExpression)
+            IMemberMap memberMap, Expression sourceExpression, Expression destExpression, Expression contextExpression)
         {
             Expression mapExpr = null;
             
