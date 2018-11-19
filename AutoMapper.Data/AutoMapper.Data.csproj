@@ -11,6 +11,8 @@
     <PackageIconUrl>https://s3.amazonaws.com/automapper/icon.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/AutoMapper/AutoMapper.Data</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/AutoMapper/AutoMapper.Data/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\AutoMapper.Data.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
