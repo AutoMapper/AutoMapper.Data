@@ -82,6 +82,12 @@
         }
 
         [Fact]
+        public void Then_a_column_containing_a_byte_array_should_be_read()
+        {
+            Result.ByteArray.ShouldBe(DataReader[FieldName.ByteArray]);
+        }
+
+        [Fact]
         public void Then_a_column_containing_a_boolean_should_be_read()
         {
             Result.Boolean.ShouldBe(DataReader[FieldName.Boolean]);
@@ -610,6 +616,7 @@
         public const String Decimal = "Decimal";
         public const String DateTime = "DateTime";
         public const String Byte = "Byte";
+        public const String ByteArray = "ByteArray";
         public const String Boolean = "Boolean";
         public const String Something = "Something";
     }
@@ -630,6 +637,7 @@
             authorizationSetDataTable.Columns.Add(FieldName.Byte, typeof(Byte));
             authorizationSetDataTable.Columns.Add(FieldName.Boolean, typeof(Boolean));
             authorizationSetDataTable.Columns.Add(FieldName.Something, typeof(DateTime));
+            authorizationSetDataTable.Columns.Add(FieldName.ByteArray, typeof(Byte[]));
 
             var authorizationSetDataRow = authorizationSetDataTable.NewRow();
             authorizationSetDataRow[FieldName.SmallInt] = 22;
@@ -643,6 +651,7 @@
             authorizationSetDataRow[FieldName.Byte] = 0x12;
             authorizationSetDataRow[FieldName.Boolean] = true;
             authorizationSetDataRow[FieldName.Something] = DateTime.MaxValue;
+            authorizationSetDataRow[FieldName.ByteArray] = new Byte[] { 0x01, 0x02, 0x03, 0x04 };
             authorizationSetDataTable.Rows.Add(authorizationSetDataRow);
 
             return authorizationSetDataTable.CreateDataReader();
@@ -669,6 +678,7 @@
         public Byte Byte { get; private set; }
         public Boolean Boolean { get; private set; }
         public DateTime Else { get; private set; }
+        public Byte[] ByteArray { get; private set; }
     }
 
     public class DerivedDTOObject : DTOObject { }
