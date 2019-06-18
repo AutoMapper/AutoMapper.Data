@@ -14,7 +14,7 @@ namespace AutoMapper.Data.Configuration.Conventions
 {
     public class DataRecordMemberConfiguration : IChildMemberConfiguration
     {
-        private static readonly HashSet<Type> _treatAsPrimitives = new HashSet<Type>(new[] { typeof(DateTime), typeof(decimal), typeof(Guid), typeof(string)/*, typeof(byte[])*/ });
+        private static readonly HashSet<Type> _treatAsPrimitives = new HashSet<Type>(new[] { typeof(DateTime), typeof(decimal), typeof(Guid), typeof(string), typeof(byte[]) });
 
         public bool MapDestinationPropertyToSource(ProfileMap options, TypeDetails sourceType, Type destType, Type destMemberType, string nameToSearch, LinkedList<MemberInfo> resolvers, IMemberConfiguration parent)
         {
