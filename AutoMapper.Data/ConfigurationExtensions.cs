@@ -13,5 +13,15 @@ namespace AutoMapper.Data
             configuration.Mappers.Insert(0, new DataReaderMapper { YieldReturnEnabled = enableYieldReturn });
             configuration.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
         }
+
+        public static void AddDataReaderProfile(this IMapperConfigurationExpression configuration, Profile profile)
+        {
+            configuration.AddDataReaderMapping();
+            profile.AddDataRecordMember();
+            configuration.AddProfile(profile);
+        }
+
+        public static void AddDataRecordMember(this Profile profile)
+           => profile?.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
     }
 }
