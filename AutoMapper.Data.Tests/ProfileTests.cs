@@ -12,8 +12,11 @@
     {
         public ProfileTestsBase()
         {
-            Mapper.Reset();
-            Mapper.Initialize(ConfigureMapper);
+            MapperConfiguration configuration = new MapperConfiguration(cfg =>{
+                ConfigureMapper(cfg);
+            });
+
+            Mapper = new Mapper(configuration);
             DataReader = new DataBuilder().BuildDataReader();
             Results = Mapper.Map<IDataReader, IEnumerable<DTOObject>>(DataReader);
             Result = Results.FirstOrDefault();
@@ -104,6 +107,8 @@
         protected IEnumerable<DTOObject> Results { get; set; }
 
         protected IDataReader DataReader { get; set; }
+
+        protected IMapper Mapper { get; }
     }
 
     public class When_using_mapper_config_extension_to_configure_mapping : ProfileTestsBase
