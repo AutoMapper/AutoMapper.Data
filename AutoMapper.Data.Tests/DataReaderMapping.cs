@@ -13,15 +13,14 @@
     {
         public When_mapping_a_data_reader_to_a_dto()
         {
-            Mapper.Reset();
-            Mapper.Initialize(cfg =>
-            {
+            MapperConfiguration configuration = new MapperConfiguration(cfg => {
                 cfg.AddDataReaderMapping(YieldReturnEnabled);
 
                 cfg.CreateMap<IDataRecord, DTOObject>()
                     .ForMember(dest => dest.Else, options => options.MapFrom(src => src.GetDateTime(10)));
             });
 
+            Mapper = new Mapper(configuration);
             DataReader = new DataBuilder().BuildDataReader();
             Results = Mapper.Map<IDataReader, IEnumerable<DTOObject>>(DataReader);
             Result = Results.FirstOrDefault();
@@ -102,45 +101,48 @@
         [Fact]
         public void Should_have_valid_mapping()
         {
-            Mapper.AssertConfigurationIsValid();
+            Mapper.ConfigurationProvider.AssertConfigurationIsValid();
         }
 
         protected virtual bool YieldReturnEnabled => false;
         protected DTOObject Result { get; set; }
         protected IEnumerable<DTOObject> Results { get; set; }
         protected IDataReader DataReader { get; set; }
+
+        protected IMapper Mapper { get; }
     }
 
     public class When_mapping_a_data_reader_to_matching_dtos
     {
         public When_mapping_a_data_reader_to_matching_dtos()
         {
-            Mapper.Reset();
-            Mapper.Initialize(cfg =>
-            {
-                cfg.Mappers.Insert(0, new DataReaderMapper());
-                cfg.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
-                cfg.CreateMap<IDataRecord, DTOObject>()
-                    .ForMember(dest => dest.Else, options => options.MapFrom(src => src.GetDateTime(10)));
-                cfg.CreateMap<IDataRecord, DerivedDTOObject>()
-                    .ForMember(dest => dest.Else, options => options.MapFrom(src => src.GetDateTime(10)));
-            });
+             MapperConfiguration configuration = new MapperConfiguration(cfg =>{
+                 cfg.Mappers.Insert(0, new DataReaderMapper());
+                 cfg.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
+                 cfg.CreateMap<IDataRecord, DTOObject>()
+                     .ForMember(dest => dest.Else, options => options.MapFrom(src => src.GetDateTime(10)));
+                 cfg.CreateMap<IDataRecord, DerivedDTOObject>()
+                     .ForMember(dest => dest.Else, options => options.MapFrom(src => src.GetDateTime(10)));
+             });
 
-            Mapper.Map<IDataReader, IEnumerable<DTOObject>>(new DataBuilder().BuildDataReader()).ToArray();
-
+            _mapper = new Mapper(configuration);
+            _mapper.Map<IDataReader, IEnumerable<DTOObject>>(new DataBuilder().BuildDataReader()).ToArray();
         }
+
         [Fact]
         public void Should_map_successfully()
         {
-            var result = Mapper.Map<IDataReader, IEnumerable<DerivedDTOObject>>(new DataBuilder().BuildDataReader());
+            var result = _mapper.Map<IDataReader, IEnumerable<DerivedDTOObject>>(new DataBuilder().BuildDataReader());
             result.Count().ShouldBe(1);
         }
 
         [Fact]
         public void Should_have_valid_mapping()
         {
-            Mapper.AssertConfigurationIsValid();
+            _mapper.ConfigurationProvider.AssertConfigurationIsValid();
         }
+
+        private IMapper _mapper;
     }
     /// <summary>
     /// The purpose of this test is to exercise the internal caching logic of DataReaderMapper.
@@ -153,6 +155,7 @@
             Results = Mapper.Map<IDataReader, IEnumerable<DTOObject>>(DataReader);
             Result = Results.FirstOrDefault();
         }
+
     }
 
     public class When_mapping_a_data_reader_using_the_default_configuration : When_mapping_a_data_reader_to_a_dto
@@ -179,8 +182,9 @@
     {
         public When_mapping_a_data_reader_to_a_dto_and_the_map_does_not_exist()
         {
-            Mapper.Reset();
-            Mapper.Initialize(cfg => cfg.Mappers.Insert(0, new DataReaderMapper()));
+            MapperConfiguration configuration = new MapperConfiguration(cfg => cfg.Mappers.Insert(0, new DataReaderMapper()));
+
+            _mapper = new Mapper(configuration);
             _dataReader = new DataBuilder().BuildDataReader();
         }
 
@@ -190,7 +194,7 @@
             var passed = false;
             try
             {
-                Mapper.Map<IDataReader, IEnumerable<DTOObject>>(_dataReader).FirstOrDefault();
+                _mapper.Map<IDataReader, IEnumerable<DTOObject>>(_dataReader).FirstOrDefault();
             }
             catch (AutoMapperMappingException)
             {
@@ -201,6 +205,7 @@
         }
 
         private IDataReader _dataReader;
+        private IMapper _mapper;
     }
 
 
@@ -208,17 +213,16 @@
     {
         public When_mapping_a_single_data_record_to_a_dto()
         {
-            Mapper.Reset();
-            Mapper.Initialize(cfg =>
-            {
+            MapperConfiguration configuration = new MapperConfiguration(cfg => {
                 cfg.Mappers.Insert(0, new DataReaderMapper());
                 cfg.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
                 cfg.CreateMap<IDataRecord, DTOObject>()
                     .ForMember(dest => dest.Else, options => options.MapFrom(src => src.GetDateTime(src.GetOrdinal(FieldName.Something))));
             });
 
+            _mapper = new Mapper(configuration);
             _dataRecord = new DataBuilder().BuildDataRecord();
-            _result = Mapper.Map<IDataRecord, DTOObject>(_dataRecord);
+            _result = _mapper.Map<IDataRecord, DTOObject>(_dataRecord);
         }
 
         [Fact]
@@ -290,11 +294,12 @@
         [Fact]
         public void Should_have_valid_mapping()
         {
-            Mapper.AssertConfigurationIsValid();
+            _mapper.ConfigurationProvider.AssertConfigurationIsValid();
         }
 
         private DTOObject _result;
         private IDataRecord _dataRecord;
+        private IMapper _mapper;
     }
 
     public class When_mapping_a_data_reader_to_a_dto_with_nullable_field
@@ -330,12 +335,12 @@
 
         public When_mapping_a_data_reader_to_a_dto_with_nullable_field()
         {
-            Mapper.Reset();
-            Mapper.Initialize(cfg => {
+            MapperConfiguration configuration = new MapperConfiguration(cfg => {
                 cfg.Mappers.Insert(0, new DataReaderMapper());
                 cfg.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
                 cfg.CreateMap<IDataReader, DtoWithSingleNullableField>();
             });
+            _mapper = new Mapper(configuration);
 
             _dataReader = new DataBuilder().BuildDataReaderWithNullableField();
         }
@@ -345,7 +350,7 @@
         {
             while (_dataReader.Read())
             {
-                var dto = Mapper.Map<IDataReader, DtoWithSingleNullableField>(_dataReader);
+                var dto = _mapper.Map<IDataReader, DtoWithSingleNullableField>(_dataReader);
 
                 if (_dataReader.IsDBNull(0))
                     dto.Integer.HasValue.ShouldBe(false);
@@ -362,10 +367,11 @@
         [Fact]
         public void Should_have_valid_mapping()
         {
-            Mapper.AssertConfigurationIsValid();
+            _mapper.ConfigurationProvider.AssertConfigurationIsValid();
         }
 
         private IDataReader _dataReader;
+        private IMapper _mapper;
     }
 
     public class When_mapping_a_data_reader_to_a_dto_with_nullable_enum
@@ -410,11 +416,11 @@
 
         public When_mapping_a_data_reader_to_a_dto_with_nullable_enum()
         {
-            Mapper.Reset();
-            Mapper.Initialize(cfg => {
+            MapperConfiguration configuration = new MapperConfiguration(cfg => {
                 cfg.Mappers.Insert(0, new DataReaderMapper());
                 cfg.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
             });
+            _mapper = new Mapper(configuration);
 
             _dataReader = new DataBuilder().BuildDataReaderWithNullableField();
         }
@@ -424,7 +430,7 @@
         {
             while (_dataReader.Read())
             {
-                //var dto = Mapper.Map<IDataReader, DtoWithSingleNullableField>(_dataReader);
+                //var dto = _mapper.Map<IDataReader, DtoWithSingleNullableField>(_dataReader);
                 var dto = new DtoWithSingleNullableField();
 
                 object value = _dataReader[0];
@@ -445,10 +451,11 @@
         [Fact]
         public void Should_have_valid_mapping()
         {
-            Mapper.AssertConfigurationIsValid();
+            _mapper.ConfigurationProvider.AssertConfigurationIsValid();
         }
 
         private IDataReader _dataReader;
+        private IMapper _mapper { get; }
     }
 
     public class When_mapping_a_data_reader_to_a_dto_with_nested_dto
@@ -507,14 +514,14 @@
 
         public When_mapping_a_data_reader_to_a_dto_with_nested_dto()
         {
-            Mapper.Reset();
-            Mapper.Initialize(cfg => {
+            MapperConfiguration configuration = new MapperConfiguration(cfg => {
                 cfg.Mappers.Insert(0, new DataReaderMapper());
                 
                 cfg.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
                 cfg.CreateMap<IDataRecord, DtoWithNestedClass>();
             });
 
+            _mapper = new Mapper(configuration);
             _dataReader = new DataBuilder().BuildDataReaderWithNestedClass();
         }
 
@@ -523,7 +530,7 @@
         {
             while (_dataReader.Read())
             {
-                var dto = Mapper.Map<IDataReader, DtoWithNestedClass>(_dataReader);
+                var dto = _mapper.Map<IDataReader, DtoWithNestedClass>(_dataReader);
 
                 dto.Integer.ShouldBe(FieldValue);
 
@@ -543,6 +550,7 @@
         }
 
         private IDataReader _dataReader;
+        private IMapper _mapper { get; }
     }
 
     public class When_mapping_a_data_reader_to_a_dto_with_missing_columns_in_data_reader
@@ -576,14 +584,14 @@
 
         public When_mapping_a_data_reader_to_a_dto_with_missing_columns_in_data_reader()
         {
-            Mapper.Reset();
-            Mapper.Initialize(cfg => {
+            MapperConfiguration configuration = new MapperConfiguration(cfg => {
                 cfg.Mappers.Insert(0, new DataReaderMapper());
 
                 cfg.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
                 cfg.CreateMap<IDataRecord, DtoWithMoreColumnsThanDataReader>();
             });
 
+            _mapper = new Mapper(configuration);
             _dataReader = new DataBuilder().BuildDataReaderWithMissingColumns();
         }
 
@@ -592,7 +600,7 @@
         {
             while (_dataReader.Read())
             {
-                var dto = Mapper.Map<IDataReader, DtoWithMoreColumnsThanDataReader>(_dataReader);
+                var dto = _mapper.Map<IDataReader, DtoWithMoreColumnsThanDataReader>(_dataReader);
 
                 dto.Integer.ShouldBe(FieldValue);
 
@@ -603,6 +611,7 @@
         }
 
         private IDataReader _dataReader;
+        private IMapper _mapper;
     }
 
     internal class FieldName
