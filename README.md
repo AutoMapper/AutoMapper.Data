@@ -13,7 +13,9 @@ var configuration = new MapperConfiguration(cfg => {
 ```
 
 ##### Using `Profile`:
+
 There are several ways to configure mapping with an instance of `Profile`:
-# Create an instance of Profile, call the `Profile.AddDataRecordMember` extension method on it, and add it to the configuration.
-# Call `AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>()` on the instance.
-# Call the `IMapperConfigurationExpression.AddDataReaderProfile` extension method.
+
+- Create an instance of Profile, call the `Profile.AddDataRecordMember` extension method on it, and add it to the configuration.
+- Call `AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>()` on the instance.
+- Call the `IMapperConfigurationExpression.AddDataReaderProfile` extension method.
