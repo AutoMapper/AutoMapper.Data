@@ -6,7 +6,7 @@
 ##### Install via initialization:
 
 ```csharp
-Mapper.Initialize(cfg => {
+var configuration = new MapperConfiguration(cfg => {
    cfg.AddDataReaderMapping();
    // Other config
 });
@@ -14,6 +14,6 @@ Mapper.Initialize(cfg => {
 
 ##### Using `Profile`:
 There are several ways to configure mapping with an instance of `Profile`:
-1. Call `AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>()` on the instance.
-2. Call the `IMapperConfigurationExpression.AddDataReaderProfile` extension method.
-3. Create an instance of Profile, call the `Profile.AddDataRecordMember` extension method on it, and add it to the configuration.
+# Create an instance of Profile, call the `Profile.AddDataRecordMember` extension method on it, and add it to the configuration.
+# Call `AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>()` on the instance.
+# Call the `IMapperConfigurationExpression.AddDataReaderProfile` extension method.
