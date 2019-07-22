@@ -131,22 +131,4 @@
             cfg.AddProfile(profile);
         }
     }
-
-    public class When_using_a_DataReaderProfile_subclass_to_configure_mapping : ProfileTestsBase
-    {
-        protected override void ConfigureMapper(IMapperConfigurationExpression cfg)
-        {
-            base.ConfigureMapper(cfg);
-            cfg.AddProfile<DataReaderProfile>();
-        }
-
-        internal class DataReaderProfile : DataReaderProfileBase
-        {
-            public DataReaderProfile()
-            {
-                CreateMap<IDataRecord, DTOObject>()
-                    .ForMember(dest => dest.Else, options => options.MapFrom(src => src.GetDateTime(10)));
-            }
-        }
-    }
 }
