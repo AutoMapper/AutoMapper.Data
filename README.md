@@ -6,11 +6,21 @@
 ##### Install via initialization:
 
 ```csharp
-var configuration = new MapperConfiguration(cfg => {
+var mapper = new Mapper(cfg => {
    cfg.AddDataReaderMapping();
+   cfg.CreateMap<IDataRecord, MyDto>();
+   cfg.CreateMap<IDataRecord, MyOtherDto>();
    // Other config
 });
+
+// or with the AutoMapper.Extensions.Microsoft.DependencyInjection package:
+
+services.AddAutoMapper(typeof(Startup), cfg => {
+	cfg.AddDataReaderMapping();
+});
 ```
+
+You will need to configure maps for each `IDataRecord` DTO mapping.
 
 ##### Using `Profile`:
 
