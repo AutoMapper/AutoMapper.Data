@@ -93,6 +93,12 @@
         }
 
         [Fact]
+        public void Then_a_column_containing_a_datetimeoffset_should_be_read()
+        {
+            Result.DateTimeOffset.ShouldBe(DataReader[FieldName.DateTimeOffset]);
+        }
+
+        [Fact]
         public void Then_a_projected_column_should_be_read()
         {
             Result.Else.ShouldBe(DataReader.GetDateTime(10));
@@ -614,6 +620,35 @@
         private IMapper _mapper;
     }
 
+   public class When_mapping_a_data_reader_to_a_dto_with_an_interface_member
+    {
+        public interface INoneSuch
+        {
+            string Nop();
+        }
+
+        public class NoneSuch
+        {
+            public string name { get; set; }
+            public INoneSuch value { get; set; }
+        }
+
+        [Fact]
+        void Then_no_exception_should_be_thrown()
+        {
+            var mapper = new MapperConfiguration(cfg =>
+            {
+                Should.NotThrow(() =>
+                {
+                    cfg.AddDataReaderMapping();
+                    cfg.CreateMap<IDataRecord, NoneSuch>()
+                        .ForMember(dto => dto.name, o => o.MapFrom(a => a["test"]))
+                        .ForAllOtherMembers(a => a.Ignore());
+                });
+            });
+        }
+    }
+
     internal class FieldName
     {
         public const String SmallInt = "SmallInteger";
@@ -628,6 +663,7 @@
         public const String ByteArray = "ByteArray";
         public const String Boolean = "Boolean";
         public const String Something = "Something";
+        public const String DateTimeOffset = "DateTimeOffset";
     }
 
     public class DataBuilder
@@ -647,6 +683,7 @@
             authorizationSetDataTable.Columns.Add(FieldName.Boolean, typeof(Boolean));
             authorizationSetDataTable.Columns.Add(FieldName.Something, typeof(DateTime));
             authorizationSetDataTable.Columns.Add(FieldName.ByteArray, typeof(Byte[]));
+            authorizationSetDataTable.Columns.Add(FieldName.DateTimeOffset, typeof(DateTimeOffset));
 
             var authorizationSetDataRow = authorizationSetDataTable.NewRow();
             authorizationSetDataRow[FieldName.SmallInt] = 22;
@@ -661,6 +698,7 @@
             authorizationSetDataRow[FieldName.Boolean] = true;
             authorizationSetDataRow[FieldName.Something] = DateTime.MaxValue;
             authorizationSetDataRow[FieldName.ByteArray] = new Byte[] { 0x01, 0x02, 0x03, 0x04 };
+            authorizationSetDataRow[FieldName.DateTimeOffset] = new DateTimeOffset(2000, 7, 4, 6, 31, 45, new TimeSpan(-5, 30, 0));
             authorizationSetDataTable.Rows.Add(authorizationSetDataRow);
 
             return authorizationSetDataTable.CreateDataReader();
@@ -688,6 +726,7 @@
         public Boolean Boolean { get; private set; }
         public DateTime Else { get; private set; }
         public Byte[] ByteArray { get; private set; }
+        public DateTimeOffset DateTimeOffset { get; private set; }
     }
 
     public class DerivedDTOObject : DTOObject { }
