@@ -656,11 +656,8 @@
         {
             var configuration = new MapperConfiguration(cfg =>
             {
-                Should.NotThrow(() =>
-                {
-                    cfg.AddDataReaderMapping();
-                    cfg.CreateMap<IDataRecord, NoneSuch>();
-                });
+                cfg.AddDataReaderMapping();
+                cfg.CreateMap<IDataRecord, NoneSuch>();
             });
 
             var mapper = new Mapper(configuration);
