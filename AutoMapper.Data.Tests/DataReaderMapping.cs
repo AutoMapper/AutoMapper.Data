@@ -622,6 +622,24 @@
 
    public class When_mapping_a_data_reader_to_a_dto_with_an_interface_member
     {
+        private const string FieldName = "Name";
+        private const string FieldValue = "Value";
+
+        private static class DataBuilder
+        {
+            public static IDataReader BuildDataReader()
+            {
+                var table = new DataTable();
+                var column = table.Columns.Add(FieldName, typeof(string));
+                var row = table.NewRow();
+
+                row[FieldName] = FieldValue;
+                table.Rows.Add(row);
+
+                return table.CreateDataReader();
+            }
+        }
+
         public interface INoneSuch
         {
             string Nop();
@@ -629,23 +647,30 @@
 
         public class NoneSuch
         {
-            public string name { get; set; }
-            public INoneSuch value { get; set; }
+            public string Name { get; set; }
+            public INoneSuch Value { get; set; }
         }
 
         [Fact]
-        void Then_no_exception_should_be_thrown()
+        void Then_results_should_be_as_expected()
         {
-            var mapper = new MapperConfiguration(cfg =>
+            var configuration = new MapperConfiguration(cfg =>
             {
                 Should.NotThrow(() =>
                 {
                     cfg.AddDataReaderMapping();
-                    cfg.CreateMap<IDataRecord, NoneSuch>()
-                        .ForMember(dto => dto.name, o => o.MapFrom(a => a["test"]))
-                        .ForAllOtherMembers(a => a.Ignore());
+                    cfg.CreateMap<IDataRecord, NoneSuch>();
                 });
             });
+
+            var mapper = new Mapper(configuration);
+            var dataReader = DataBuilder.BuildDataReader();
+
+            dataReader.Read();
+            var result = mapper.Map<IDataReader, NoneSuch>(dataReader);
+
+            result.Name.ShouldBe(dataReader[FieldName]);
+            result.Value.ShouldBeNull();
         }
     }
 
