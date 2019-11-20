@@ -14,8 +14,6 @@ namespace AutoMapper.Data.Configuration.Conventions
 {
     public class DataRecordMemberConfiguration : IChildMemberConfiguration
     {
-        private static readonly HashSet<Type> _treatAsPrimitives = new HashSet<Type>(new[] { typeof(DateTime), typeof(decimal), typeof(Guid), typeof(string), typeof(byte[]) });
-
         public bool MapDestinationPropertyToSource(ProfileMap options, TypeDetails sourceType, Type destType, Type destMemberType, string nameToSearch, LinkedList<MemberInfo> resolvers, IMemberConfiguration parent)
         {
             if (TypeExtensions.IsAssignableFrom(typeof(IDataRecord), sourceType.Type))
@@ -57,40 +55,44 @@ namespace AutoMapper.Data.Configuration.Conventions
             if (IsNestedObject(destMemberType))
             {
                 var ctor = destMemberType.GetConstructor(Type.EmptyTypes);
-                MethodInfo setMethod;
-                var objValueLocal = il.DeclareLocal(destMemberType);
-                var refersToMethod = DataReaderHelper.RefersToMethod;
-                var elseRefersToLabel = il.DefineLabel();
-                var endIfRefersToLabel = il.DefineLabel();
 
-                // If there are non-null fields referring to the nested property... 
-                il.Emit(Ldarg_0);
-                il.Emit(Ldstr, nameToSearch);
-                il.Emit(Call, refersToMethod);
-                il.Emit(Brfalse, elseRefersToLabel);
-                il.Emit(Newobj, ctor);
-                il.Emit(Stloc, objValueLocal);
-
-                foreach (PropertyInfo property in TypeExtensions.GetProperties(destMemberType))
+                if (ctor != null)
                 {
-                    if (property.CanWrite)
+                    MethodInfo setMethod;
+                    var objValueLocal = il.DeclareLocal(destMemberType);
+                    var refersToMethod = DataReaderHelper.RefersToMethod;
+                    var elseRefersToLabel = il.DefineLabel();
+                    var endIfRefersToLabel = il.DefineLabel();
+
+                    // If there are non-null fields referring to the nested property... 
+                    il.Emit(Ldarg_0);
+                    il.Emit(Ldstr, nameToSearch);
+                    il.Emit(Call, refersToMethod);
+                    il.Emit(Brfalse, elseRefersToLabel);
+                    il.Emit(Newobj, ctor);
+                    il.Emit(Stloc, objValueLocal);
+
+                    foreach (PropertyInfo property in TypeExtensions.GetProperties(destMemberType))
                     {
-                        setMethod = TypeExtensions.GetSetMethod(property, true);
-                        il.Emit(Ldloc, objValueLocal);
-                        EmitPropertyMapping(il, destMemberType, property.PropertyType, $"{nameToSearch}.{property.Name}");
-                        il.Emit(Callvirt, setMethod);
+                        if (property.CanWrite)
+                        {
+                            setMethod = TypeExtensions.GetSetMethod(property, true);
+                            il.Emit(Ldloc, objValueLocal);
+                            EmitPropertyMapping(il, destMemberType, property.PropertyType, $"{nameToSearch}.{property.Name}");
+                            il.Emit(Callvirt, setMethod);
+                        }
                     }
+                    il.Emit(Br, endIfRefersToLabel);
+
+                    // else do this...
+                    il.MarkLabel(elseRefersToLabel);
+                    il.Emit(Ldnull);
+                    il.Emit(Stloc, objValueLocal);
+                    il.MarkLabel(endIfRefersToLabel);
+
+                    il.Emit(Ldloc, objValueLocal);
+                    il.Emit(Stloc, fieldValueLocal);
                 }
-                il.Emit(Br, endIfRefersToLabel);
-
-                // else do this...
-                il.MarkLabel(elseRefersToLabel);
-                il.Emit(Ldnull);
-                il.Emit(Stloc, objValueLocal);
-                il.MarkLabel(endIfRefersToLabel);
-
-                il.Emit(Ldloc, objValueLocal);
-                il.Emit(Stloc, fieldValueLocal);
             }
 
             il.Emit(Pop);
@@ -128,7 +130,7 @@ namespace AutoMapper.Data.Configuration.Conventions
         {
             Type resolvedtype = Nullable.GetUnderlyingType(type) ?? type;
 
-            return !(resolvedtype.IsPrimitive() || _treatAsPrimitives.Contains(resolvedtype) || resolvedtype.IsEnum());
+            return !(resolvedtype.IsPrimitive() || resolvedtype.IsEnum());
         }
     }
 }
