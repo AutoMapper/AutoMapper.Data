@@ -45,6 +45,8 @@ namespace AutoMapper.Data.Configuration.Conventions
             var dbNullLabel = il.DefineLabel();
             var endIfDbNullLabel = il.DefineLabel();
             var getDbNullValueField = DataReaderHelper.DbNullValueField;
+            var underlyingType = Nullable.GetUnderlyingType(destMemberType);
+            var isNullable = (underlyingType != null);
 
             // Call TryGetValue
             il.Emit(Ldarg_0);
@@ -116,7 +118,16 @@ namespace AutoMapper.Data.Configuration.Conventions
             // else
             il.MarkLabel(dbNullElseLabel);
             il.Emit(Ldloc, fieldValueLocal);
+            if (isNullable)
+            {
+                var nullableCtor = destMemberType.GetConstructor(new[] { underlyingType });
+                il.Emit(Unbox_Any, underlyingType);
+                il.Emit(Newobj, nullableCtor);
+            }
+            else
+            {
             il.Emit(Unbox_Any, destMemberType);
+            }
             il.Emit(Stloc, returnValueLocal);
 
             // end if
@@ -130,7 +141,7 @@ namespace AutoMapper.Data.Configuration.Conventions
         {
             Type resolvedtype = Nullable.GetUnderlyingType(type) ?? type;
 
-            return !(resolvedtype.IsPrimitive() || resolvedtype.IsEnum());
+            return !resolvedtype.IsPrimitive();
         }
     }
 }
