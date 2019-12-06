@@ -425,6 +425,7 @@
             MapperConfiguration configuration = new MapperConfiguration(cfg => {
                 cfg.Mappers.Insert(0, new DataReaderMapper());
                 cfg.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
+                cfg.CreateMap<IDataReader, DtoWithSingleNullableField>();
             });
             _mapper = new Mapper(configuration);
 
@@ -436,8 +437,7 @@
         {
             while (_dataReader.Read())
             {
-                //var dto = _mapper.Map<IDataReader, DtoWithSingleNullableField>(_dataReader);
-                var dto = new DtoWithSingleNullableField();
+                var dto = _mapper.Map<IDataReader, DtoWithSingleNullableField>(_dataReader);
 
                 object value = _dataReader[0];
                 if (!Equals(value, DBNull.Value))
