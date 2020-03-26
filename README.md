@@ -3,6 +3,8 @@
 
 #### The data extensions to AutoMapper, IDataReader support
 
+[![NuGet](http://img.shields.io/nuget/v/AutoMapper.Data.svg?label=NuGet)](https://www.nuget.org/packages/AutoMapper.Data/)
+
 ##### Install via initialization:
 
 ```csharp
