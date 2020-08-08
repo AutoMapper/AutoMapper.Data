@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Description>ADO.NET extensions for AutoMapper</Description>
-    <VersionPrefix>4.1.0</VersionPrefix>
+    <VersionPrefix>5.0.0</VersionPrefix>
     <Authors>Jimmy Bogard</Authors>
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <AssemblyName>AutoMapper.Data</AssemblyName>
