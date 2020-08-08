@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using System.Reflection.Emit;
-using AutoMapper;
+
 using AutoMapper.Configuration.Conventions;
 using AutoMapper.Data.Utils;
 using AutoMapper.Utils;
+
 using static System.Reflection.Emit.OpCodes;
+
 using TypeExtensions = AutoMapper.Utils.TypeExtensions;
 
 namespace AutoMapper.Data.Configuration.Conventions
 {
     public class DataRecordMemberConfiguration : IChildMemberConfiguration
     {
-        public bool MapDestinationPropertyToSource(ProfileMap options, TypeDetails sourceType, Type destType, Type destMemberType, string nameToSearch, LinkedList<MemberInfo> resolvers, IMemberConfiguration parent)
+        public bool MapDestinationPropertyToSource(ProfileMap options, TypeDetails sourceType, Type destType, Type destMemberType, string nameToSearch, LinkedList<MemberInfo> resolvers, IMemberConfiguration parent, bool isReverseMap)
         {
             if (TypeExtensions.IsAssignableFrom(typeof(IDataRecord), sourceType.Type))
             {

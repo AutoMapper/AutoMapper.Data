@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq.Expressions;
 using System.Reflection;
+
 using AutoMapper.Data.Utils;
-using AutoMapper.Mappers.Internal;
-using AutoMapper.Utils;
+using AutoMapper.Internal;
+
 using static System.Linq.Expressions.Expression;
+
 using ExpressionExtensions = AutoMapper.Utils.ExpressionExtensions;
 using TypeHelper = AutoMapper.Utils.TypeHelper;
 
@@ -68,7 +70,7 @@ namespace AutoMapper.Data.Mappers
         private static bool IsDataReader(Type sourceType, Type destinationType)
         {
             return typeof(IDataReader).GetTypeInfo().IsAssignableFrom(sourceType.GetTypeInfo())
-                && destinationType.IsEnumerableType();
+                   && destinationType.IsEnumerableType();
         }
     }
 }
