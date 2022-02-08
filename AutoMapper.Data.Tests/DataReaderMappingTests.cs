@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
+    using AutoMapper.Internal;
     using Configuration.Conventions;
     using Mappers;
     using Shouldly;
@@ -123,8 +124,8 @@
         public When_mapping_a_data_reader_to_matching_dtos()
         {
              MapperConfiguration configuration = new MapperConfiguration(cfg =>{
-                 cfg.Mappers.Insert(0, new DataReaderMapper());
-                 cfg.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
+                 cfg.AddDataReaderMapping();
+
                  cfg.CreateMap<IDataRecord, DTOObject>()
                      .ForMember(dest => dest.Else, options => options.MapFrom(src => src.GetDateTime(10)));
                  cfg.CreateMap<IDataRecord, DerivedDTOObject>()
@@ -161,7 +162,6 @@
             Results = Mapper.Map<IDataReader, IEnumerable<DTOObject>>(DataReader);
             Result = Results.FirstOrDefault();
         }
-
     }
 
     public class When_mapping_a_data_reader_using_the_default_configuration : When_mapping_a_data_reader_to_a_dto
@@ -188,7 +188,8 @@
     {
         public When_mapping_a_data_reader_to_a_dto_and_the_map_does_not_exist()
         {
-            MapperConfiguration configuration = new MapperConfiguration(cfg => cfg.Mappers.Insert(0, new DataReaderMapper()));
+            MapperConfiguration configuration = 
+                new MapperConfiguration(cfg => cfg.Internal().Mappers.Insert(0, new DataReaderMapper()));
 
             _mapper = new Mapper(configuration);
             _dataReader = new DataBuilder().BuildDataReader();
@@ -220,8 +221,8 @@
         public When_mapping_a_single_data_record_to_a_dto()
         {
             MapperConfiguration configuration = new MapperConfiguration(cfg => {
-                cfg.Mappers.Insert(0, new DataReaderMapper());
-                cfg.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
+                cfg.AddDataReaderMapping();
+
                 cfg.CreateMap<IDataRecord, DTOObject>()
                     .ForMember(dest => dest.Else, options => options.MapFrom(src => src.GetDateTime(src.GetOrdinal(FieldName.Something))));
             });
@@ -342,8 +343,8 @@
         public When_mapping_a_data_reader_to_a_dto_with_nullable_field()
         {
             MapperConfiguration configuration = new MapperConfiguration(cfg => {
-                cfg.Mappers.Insert(0, new DataReaderMapper());
-                cfg.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
+                cfg.AddDataReaderMapping();
+
                 cfg.CreateMap<IDataReader, DtoWithSingleNullableField>();
             });
             _mapper = new Mapper(configuration);
@@ -423,8 +424,8 @@
         public When_mapping_a_data_reader_to_a_dto_with_nullable_enum()
         {
             MapperConfiguration configuration = new MapperConfiguration(cfg => {
-                cfg.Mappers.Insert(0, new DataReaderMapper());
-                cfg.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
+                cfg.AddDataReaderMapping();
+
                 cfg.CreateMap<IDataReader, DtoWithSingleNullableField>();
             });
             _mapper = new Mapper(configuration);
@@ -521,9 +522,8 @@
         public When_mapping_a_data_reader_to_a_dto_with_nested_dto()
         {
             MapperConfiguration configuration = new MapperConfiguration(cfg => {
-                cfg.Mappers.Insert(0, new DataReaderMapper());
-                
-                cfg.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
+                cfg.AddDataReaderMapping();
+
                 cfg.CreateMap<IDataRecord, DtoWithNestedClass>();
             });
 
@@ -591,9 +591,8 @@
         public When_mapping_a_data_reader_to_a_dto_with_missing_columns_in_data_reader()
         {
             MapperConfiguration configuration = new MapperConfiguration(cfg => {
-                cfg.Mappers.Insert(0, new DataReaderMapper());
+                cfg.AddDataReaderMapping();
 
-                cfg.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
                 cfg.CreateMap<IDataRecord, DtoWithMoreColumnsThanDataReader>();
             });
 

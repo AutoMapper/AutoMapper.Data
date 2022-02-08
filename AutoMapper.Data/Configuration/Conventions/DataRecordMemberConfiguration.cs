@@ -6,6 +6,7 @@ using System.Reflection.Emit;
 
 using AutoMapper.Configuration.Conventions;
 using AutoMapper.Data.Utils;
+using AutoMapper.Internal;
 using AutoMapper.Utils;
 
 using static System.Reflection.Emit.OpCodes;
@@ -16,7 +17,7 @@ namespace AutoMapper.Data.Configuration.Conventions
 {
     public class DataRecordMemberConfiguration : IChildMemberConfiguration
     {
-        public bool MapDestinationPropertyToSource(ProfileMap options, TypeDetails sourceType, Type destType, Type destMemberType, string nameToSearch, LinkedList<MemberInfo> resolvers, IMemberConfiguration parent, bool isReverseMap)
+        public bool MapDestinationPropertyToSource(ProfileMap options, TypeDetails sourceType, Type destType, Type destMemberType, string nameToSearch, List<MemberInfo> resolvers, IMemberConfiguration parent, bool isReverseMap)
         {
             if (TypeExtensions.IsAssignableFrom(typeof(IDataRecord), sourceType.Type))
             {
@@ -30,7 +31,7 @@ namespace AutoMapper.Data.Configuration.Conventions
                 EmitPropertyMapping(il, destType, destMemberType, nameToSearch);
                 il.Emit(Ret);
 
-                resolvers.AddLast(method);
+                resolvers.Add(method);
 
                 return true;
             }

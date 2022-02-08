@@ -6,7 +6,8 @@ using System.Reflection;
 
 using AutoMapper.Data.Utils;
 using AutoMapper.Internal;
-
+using AutoMapper.Internal.Mappers;
+using AutoMapper.Utils;
 using static System.Linq.Expressions.Expression;
 
 using ExpressionExtensions = AutoMapper.Utils.ExpressionExtensions;
@@ -21,11 +22,11 @@ namespace AutoMapper.Data.Mappers
         public bool IsMatch(TypePair context)
             => IsDataReader(context.SourceType, context.DestinationType);
 
-        public Expression MapExpression(IConfigurationProvider configurationProvider, ProfileMap profileMap,
-            IMemberMap memberMap, Expression sourceExpression, Expression destExpression, Expression contextExpression)
+        public Expression MapExpression(IGlobalConfiguration configurationProvider, ProfileMap profileMap, MemberMap memberMap,
+            Expression sourceExpression, Expression destExpression)
         {
             Expression mapExpr = null;
-            
+
             if (IsDataReader(sourceExpression.Type, destExpression.Type))
             {
                 ParameterExpression itemParam;
@@ -33,7 +34,8 @@ namespace AutoMapper.Data.Mappers
 
                 try
                 {
-                    itemExpr = CollectionMapperExpressionFactory.MapItemExpr(configurationProvider, profileMap, typeof(IEnumerable<IDataRecord>), destExpression.Type, contextExpression, out itemParam);
+                    itemExpr = configurationProvider.MapItemExpr(profileMap, memberMap,
+                        typeof(IEnumerable<IDataRecord>), destExpression.Type, out itemParam);
                 }
                 catch (Exception ex)
                 {
@@ -42,11 +44,11 @@ namespace AutoMapper.Data.Mappers
 
                 if (YieldReturnEnabled)
                 {
-                    var mapFunc = Lambda(itemExpr, itemParam, contextExpression as ParameterExpression);
+                    var mapFunc = Lambda(itemExpr, itemParam);
                     MethodInfo genericMapFunc = DataReaderHelper.DataReaderAsYieldReturnMethod.MakeGenericMethod(TypeHelper.GetElementType(destExpression.Type));
-                    var sourceAsYieldReturn = Call(null, genericMapFunc, sourceExpression, contextExpression, mapFunc);
+                    var sourceAsYieldReturn = Call(null, genericMapFunc, sourceExpression, mapFunc);
 
-                    mapExpr =
+                    mapExpr = 
                         Block(sourceAsYieldReturn);
                 }
                 else
@@ -57,9 +59,9 @@ namespace AutoMapper.Data.Mappers
                     var listAddExpr = Call(listVar, listType.GetMethod("Add"), itemExpr); // Cache this if we experience poor performance
 
                     mapExpr =
-                        Block(new[] { listVar }, 
-                            Assign(listVar, New(listType)), 
-                            ExpressionExtensions.ForEach(sourceAsEnumerable, itemParam, listAddExpr), 
+                        Block(new[] { listVar },
+                            Assign(listVar, New(listType)),
+                            ExpressionExtensions.ForEach(sourceAsEnumerable, itemParam, listAddExpr),
                             listVar);
                 }
             }

@@ -3,7 +3,6 @@ namespace AutoMapper.Utils
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Linq.Expressions;
     using System.Reflection;
 #if NET45
     using System.Reflection.Emit;

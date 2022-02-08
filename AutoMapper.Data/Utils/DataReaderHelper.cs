@@ -13,11 +13,11 @@ namespace AutoMapper.Data.Utils
             return new DataReaderEnumerableAdapter(reader);
         }
 
-        public static IEnumerable<T> AsYieldReturn<T>(IDataReader reader, ResolutionContext context, Func<IDataReader, ResolutionContext, object> mapFunc)
+        public static IEnumerable<T> AsYieldReturn<T>(IDataReader reader, Func<IDataReader, object> mapFunc)
         {            
             while(reader.Read())
             {
-                yield return (T)mapFunc(reader, context);
+                yield return (T)mapFunc(reader);
             }
         }
 
