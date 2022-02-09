@@ -21,7 +21,6 @@ deploy:
   skip_symbols: true
 - provider: NuGet
   name: production
-  api_key:
-    secure: ${{ secrets.NUGET_API_KEY }}
+  api_key: ${{ secrets.NUGET_API_KEY }}
   on:
     appveyor_repo_tag: true
