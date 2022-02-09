@@ -18,17 +18,11 @@ namespace AutoMapper.Data
 
         public static void AddDataReaderMapping(this IMapperConfigurationExpression configuration, bool enableYieldReturn)
         {
-            var globalConfiguration = configuration.Internal();
-            globalConfiguration.Mappers.Insert(0, new DataReaderMapper { YieldReturnEnabled = enableYieldReturn });
-            globalConfiguration.AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
+            configuration.Internal().Mappers.Insert(0, new DataReaderMapper { YieldReturnEnabled = enableYieldReturn });
+            configuration.AddDataRecordMember();
         }
 
-        public static void AddDataRecordMember(this Profile profile)
-        {
-            if (profile != null)
-            {
-                profile.Internal().AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
-            }
-        }
+        public static void AddDataRecordMember(this IProfileExpression profile) => 
+            profile.Internal().AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
     }
 }
