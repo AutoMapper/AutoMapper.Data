@@ -35,12 +35,8 @@ $versionSuffix = @{ $true = "--version-suffix=$($suffix)"; $false = ""}[$suffix 
 
 exec { & dotnet build AutoMapper.Data.sln -c Release --version-suffix=$buildSuffix -v q /nologo }
 
-Push-Location -Path .\AutoMapper.Data.Tests
-
 exec { & dotnet test -c Release --no-build }
 
-Pop-Location
-
-exec { & dotnet pack .\AutoMapper.Data -c Release -o ..\artifacts --include-symbols --no-build $versionSuffix }
+exec { & dotnet pack .\AutoMapper.Data -c Release -o artifacts --include-symbols --no-build $versionSuffix }
 
 
