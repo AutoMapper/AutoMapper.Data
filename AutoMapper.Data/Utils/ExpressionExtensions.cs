@@ -1,15 +1,9 @@
-﻿using System.Collections;
-
-namespace AutoMapper.Utils
+﻿namespace AutoMapper.Utils
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
     using System.Linq.Expressions;
-    using System.Reflection;
-    using Configuration;
-    using Execution;
     using static System.Linq.Expressions.Expression;
 
     public static class ExpressionExtensions

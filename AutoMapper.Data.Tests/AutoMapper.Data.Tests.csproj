@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>AutoMapper.Data.Tests Class Library</Description>
     <Authors>Jimmy Bogard</Authors>
-    <TargetFrameworks>net461;netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <DebugType>portable</DebugType>
     <AssemblyName>AutoMapper.Data.Tests</AssemblyName>
     <PackageId>AutoMapper.Data.Tests</PackageId>
@@ -21,13 +21,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
-    <PackageReference Include="xunit" Version="2.4.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
-    <PackageReference Include="Shouldly" Version="3.0.0" />
+    <PackageReference Include="Shouldly" Version="4.0.3" />
   </ItemGroup>
 
 </Project>
