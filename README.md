@@ -3,6 +3,7 @@
 
 #### The data extensions to AutoMapper, IDataReader support
 
+[![CI](https://github.com/automapper/automapper.data/workflows/CI/badge.svg)](https://github.com/AutoMapper/AutoMapper.Data/actions?query=workflow%3ACI)
 [![NuGet](http://img.shields.io/nuget/v/AutoMapper.Data.svg?label=NuGet)](https://www.nuget.org/packages/AutoMapper.Data/)
 [![MyGet (dev)](https://img.shields.io/myget/automapperdev/vpre/AutoMapper.Data.svg?label=MyGet)](https://myget.org/feed/automapperdev/package/nuget/AutoMapper.Data)
 
