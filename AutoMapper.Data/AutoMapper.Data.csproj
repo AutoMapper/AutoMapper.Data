@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Description>ADO.NET extensions for AutoMapper</Description>
-    <VersionPrefix>6.0.0</VersionPrefix>
+    <VersionPrefix>6.1.0</VersionPrefix>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Authors>Jimmy Bogard</Authors>
     <TargetFrameworks>netstandard2.1</TargetFrameworks>
