@@ -3,6 +3,7 @@
   <PropertyGroup>
     <Description>ADO.NET extensions for AutoMapper</Description>
     <VersionPrefix>6.0.0</VersionPrefix>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Authors>Jimmy Bogard</Authors>
     <TargetFrameworks>netstandard2.1</TargetFrameworks>
     <AssemblyName>AutoMapper.Data</AssemblyName>
@@ -10,13 +11,22 @@
     <PackageTags>AutoMapper</PackageTags>
     <PackageIconUrl>https://s3.amazonaws.com/automapper/icon.png</PackageIconUrl>
     <PackageProjectUrl>https://github.com/AutoMapper/AutoMapper.Data</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/AutoMapper/AutoMapper.Data/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\AutoMapper.Data.snk</AssemblyOriginatorKeyFile>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="[11.0.1, 12.0.0)" />
-  </ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="" />
+   </ItemGroup>
 
 </Project>
