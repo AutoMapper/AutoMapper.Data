@@ -40,7 +40,7 @@ namespace AutoMapper.Utils
                     Assign(passedDestination, destExpression),
                     IfThenElse(condition ?? Constant(false),
                                     Block(Assign(newExpression, passedDestination), Call(newExpression, clearMethod)),
-                                    Assign(newExpression, passedDestination.Type.NewExpr(ifInterfaceType))),
+                                    Assign(newExpression, passedDestination.Type.NewExpr(ifInterfaceType, configurationProvider))),
                     Condition(Equal(sourceExpression, Constant(null)), ToType(ifNullExpr, passedDestination.Type), ToType(mapExpr, passedDestination.Type))
                 );
             if(memberMap != null)
@@ -60,16 +60,16 @@ namespace AutoMapper.Utils
             return Block(checkContext, checkNull);
         }
 
-        internal static Delegate Constructor(Type type)
+        internal static Delegate Constructor(Type type, IGlobalConfiguration configuration)
         {
-            return Lambda(ToType(ObjectFactory.GenerateConstructorExpression(type), type)).Compile();
+            return Lambda(ToType(ObjectFactory.GenerateConstructorExpression(type, configuration), type)).Compile();
         }
 
-        internal static Expression NewExpr(this Type baseType, Type ifInterfaceType)
+        internal static Expression NewExpr(this Type baseType, Type ifInterfaceType, IGlobalConfiguration configuration)
         {
             var newExpr = baseType.IsInterface()
                 ? New(ifInterfaceType.MakeGenericType(TypeHelper.GetElementTypes(baseType, ElementTypeFlags.BreakKeyValuePair)))
-                : ObjectFactory.GenerateConstructorExpression(baseType);
+                : ObjectFactory.GenerateConstructorExpression(baseType, configuration);
             return ToType(newExpr, baseType);
         }
 

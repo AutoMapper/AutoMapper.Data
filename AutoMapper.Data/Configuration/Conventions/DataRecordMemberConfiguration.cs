@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -15,11 +14,11 @@ using TypeExtensions = AutoMapper.Utils.TypeExtensions;
 
 namespace AutoMapper.Data.Configuration.Conventions
 {
-    public class DataRecordMemberConfiguration : IChildMemberConfiguration
+    public class DataRecordMemberConfiguration : ISourceToDestinationNameMapper
     {
-        public bool MapDestinationPropertyToSource(ProfileMap options, TypeDetails sourceType, Type destType, Type destMemberType, string nameToSearch, List<MemberInfo> resolvers, IMemberConfiguration parent, bool isReverseMap)
+        public MemberInfo GetSourceMember(TypeDetails sourceTypeDetails, Type destType, Type destMemberType, string nameToSearch)
         {
-            if (TypeExtensions.IsAssignableFrom(typeof(IDataRecord), sourceType.Type))
+            if (TypeExtensions.IsAssignableFrom(typeof(IDataRecord), sourceTypeDetails.Type))
             {
                 var returnType = destMemberType;
                 // TODO: The return type really should be the type of the field in the reader.
@@ -31,11 +30,13 @@ namespace AutoMapper.Data.Configuration.Conventions
                 EmitPropertyMapping(il, destType, destMemberType, nameToSearch);
                 il.Emit(Ret);
 
-                resolvers.Add(method);
-
-                return true;
+                return method;
             }
-            return false;
+            return null;
+        }
+
+        public void Merge(ISourceToDestinationNameMapper otherNamedMapper)
+        {
         }
 
         private void EmitPropertyMapping(ILGenerator il, Type destType, Type destMemberType, string nameToSearch)
