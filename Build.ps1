@@ -29,6 +29,6 @@ exec { & dotnet clean -c Release }
 exec { & dotnet restore }
 
 exec { & dotnet build AutoMapper.Data.sln -c Release -v q /nologo }
-exec { & dotnet test -c Release -r $artifacts --no-build -l trx --verbosity=normal }
+exec { & dotnet test -c Release --no-build -l trx --verbosity=normal }
 
-exec { & dotnet pack .\AutoMapper.Data -c Release -o artifacts --include-symbols --no-build }
+exec { & dotnet pack .\AutoMapper.Data -c Release -o $artifacts --include-symbols --no-build }

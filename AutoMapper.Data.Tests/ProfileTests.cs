@@ -3,8 +3,6 @@
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
-    using System.Reflection;
-    using AutoMapper.Data.Configuration.Conventions;
     using Shouldly;
     using Xunit;
 
