@@ -23,6 +23,6 @@ namespace AutoMapper.Data
         }
 
         public static void AddDataRecordMember(this IProfileExpression profile) => 
-            profile.Internal().AddMemberConfiguration().AddMember<DataRecordMemberConfiguration>();
+            profile.Internal().MemberConfiguration.NameToMemberMappers.Add(new DataRecordMemberConfiguration());
     }
 }

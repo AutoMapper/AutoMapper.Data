@@ -5,7 +5,6 @@
     using System.Data;
     using System.Linq;
     using AutoMapper.Internal;
-    using Configuration.Conventions;
     using Mappers;
     using Shouldly;
     using Xunit;
