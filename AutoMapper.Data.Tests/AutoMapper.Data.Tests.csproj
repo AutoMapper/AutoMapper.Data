@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>AutoMapper.Data.Tests Class Library</Description>
     <Authors>Jimmy Bogard</Authors>
-    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net7.0</TargetFrameworks>
     <DebugType>portable</DebugType>
     <AssemblyName>AutoMapper.Data.Tests</AssemblyName>
     <PackageId>AutoMapper.Data.Tests</PackageId>
