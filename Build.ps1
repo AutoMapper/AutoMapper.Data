@@ -25,10 +25,6 @@ function Exec
 $artifacts = ".\artifacts"
 if(Test-Path .\artifacts) { Remove-Item .\artifacts -Force -Recurse }
 
-exec { & dotnet clean -c Release }
-exec { & dotnet restore }
-
-exec { & dotnet build AutoMapper.Data.sln -c Release -v q /nologo }
-exec { & dotnet test -c Release --no-build -l trx --verbosity=normal }
+exec { & dotnet test -c Release -l trx --verbosity=normal }
 
 exec { & dotnet pack .\AutoMapper.Data -c Release -o $artifacts --include-symbols --no-build }
