@@ -5,7 +5,7 @@
     <VersionPrefix>7.0.2</VersionPrefix>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Authors>Jimmy Bogard</Authors>
-    <TargetFrameworks>netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <AssemblyName>AutoMapper.Data</AssemblyName>
     <PackageId>AutoMapper.Data</PackageId>
     <PackageTags>AutoMapper</PackageTags>
@@ -25,7 +25,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="[13.0.1,)" />
+    <PackageReference Include="AutoMapper" Version="[13.0.0, 14.0.0)" />
     <None Include="..\README.md" Pack="true" PackagePath="" />
    </ItemGroup>
 
