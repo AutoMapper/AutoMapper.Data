@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -18,6 +19,8 @@ namespace AutoMapper.Data.Configuration.Conventions
     {
         public MemberInfo GetSourceMember(TypeDetails sourceTypeDetails, Type destType, Type destMemberType, string nameToSearch)
         {
+            nameToSearch = TransformNameFromSourceNamingConvention(sourceTypeDetails, nameToSearch);
+            
             if (TypeExtensions.IsAssignableFrom(typeof(IDataRecord), sourceTypeDetails.Type))
             {
                 var returnType = destMemberType;
@@ -146,6 +149,37 @@ namespace AutoMapper.Data.Configuration.Conventions
             Type resolvedtype = Nullable.GetUnderlyingType(type) ?? type;
 
             return !resolvedtype.IsPrimitive();
+        }
+
+        private string TransformNameFromSourceNamingConvention(TypeDetails sourceTypeDetails, string nameToSearch)
+        {
+            // Sadly, Automapper's INamingConvention doesn't implement method to transform the nameToSearch.
+            // Added support for LowerUnderscoreNamingConvention only.
+            
+            var memberConfiguration = sourceTypeDetails.Config.MemberConfiguration;
+
+            var sourceNamingConvention = memberConfiguration.SourceNamingConvention;
+
+            var destinationNamingConvention = memberConfiguration.DestinationNamingConvention;
+            
+            if (sourceNamingConvention is LowerUnderscoreNamingConvention)
+            {
+                return TransformToLowerUnderscoreCase(nameToSearch, destinationNamingConvention);
+            }
+            
+            return nameToSearch;
+        }
+
+        private string TransformToLowerUnderscoreCase(string input, INamingConvention destinationNamingConvention)
+        {
+            var splitInput = destinationNamingConvention.Split(input);
+
+            if (splitInput.Length == 0)
+            {
+                return input.ToLower();
+            }
+            
+            return string.Join('_', splitInput.Select(x => x.ToLower()));
         }
     }
 }

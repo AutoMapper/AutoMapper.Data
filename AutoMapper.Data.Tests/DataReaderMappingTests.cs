@@ -669,7 +669,136 @@
         }
     }
 
-    internal class FieldName
+    public class When_mapping_a_pascal_case_destination_to_snake_case_source
+    {
+        public When_mapping_a_pascal_case_destination_to_snake_case_source()
+        {
+            MapperConfiguration configuration = new MapperConfiguration(cfg => {
+                cfg.AddDataReaderMapping();
+
+                cfg.SourceMemberNamingConvention = new LowerUnderscoreNamingConvention();
+                
+                cfg.CreateMap<IDataRecord, DTOObject>()
+                    .ForMember(dest => dest.Else, options => options.MapFrom(src => src.GetDateTime(src.GetOrdinal(FieldName.Something))));
+            });
+
+            Mapper = new Mapper(configuration);
+            DataReader = new DataBuilder().BuildSnakeCaseDataReader();
+            Results = Mapper.Map<IDataReader, IEnumerable<DTOObject>>(DataReader);
+            Result = Results.FirstOrDefault();
+        }
+        
+                [Fact]
+        public void Then_a_column_containing_a_small_integer_should_be_read()
+        {
+            Result.SmallInteger.ShouldBe(DataReader[SnakeCaseFieldName.SmallInt]);
+        }
+
+        [Fact]
+        public void Then_a_column_containing_an_integer_should_be_read()
+        {
+            Result.Integer.ShouldBe(DataReader[SnakeCaseFieldName.Int]);
+        }
+
+        [Fact]
+        public void Then_a_column_containing_a_big_integer_should_be_read()
+        {
+            Result.BigInteger.ShouldBe(DataReader[SnakeCaseFieldName.BigInt]);
+        }
+
+        [Fact]
+        public void Then_a_column_containing_a_GUID_should_be_read()
+        {
+            Result.Guid.ShouldBe(DataReader[SnakeCaseFieldName.Guid]);
+        }
+
+        [Fact]
+        public void Then_a_column_containing_a_float_should_be_read()
+        {
+            Result.Float.ShouldBe(DataReader[SnakeCaseFieldName.Float]);
+        }
+
+        [Fact]
+        public void Then_a_column_containing_a_double_should_be_read()
+        {
+            Result.Double.ShouldBe(DataReader[SnakeCaseFieldName.Double]);
+        }
+
+        [Fact]
+        public void Then_a_column_containing_a_decimal_should_be_read()
+        {
+            Result.Decimal.ShouldBe(DataReader[SnakeCaseFieldName.Decimal]);
+        }
+
+        [Fact]
+        public void Then_a_column_containing_a_date_and_time_should_be_read()
+        {
+            Result.DateTime.ShouldBe(DataReader[SnakeCaseFieldName.DateTime]);
+        }
+
+        [Fact]
+        public void Then_a_column_containing_a_byte_should_be_read()
+        {
+            Result.Byte.ShouldBe(DataReader[SnakeCaseFieldName.Byte]);
+        }
+
+        [Fact]
+        public void Then_a_column_containing_a_byte_array_should_be_read()
+        {
+            Result.ByteArray.ShouldBe(DataReader[SnakeCaseFieldName.ByteArray]);
+        }
+
+        [Fact]
+        public void Then_a_column_containing_a_boolean_should_be_read()
+        {
+            Result.Boolean.ShouldBe(DataReader[SnakeCaseFieldName.Boolean]);
+        }
+
+        [Fact]
+        public void Then_a_column_containing_a_datetimeoffset_should_be_read()
+        {
+            Result.DateTimeOffset.ShouldBe(DataReader[SnakeCaseFieldName.DateTimeOffset]);
+        }
+
+        [Fact]
+        public void Then_a_projected_column_should_be_read()
+        {
+            Result.Else.ShouldBe(DataReader.GetDateTime(10));
+        }
+
+        [Fact]
+        public void Should_have_valid_mapping()
+        {
+            Mapper.ConfigurationProvider.AssertConfigurationIsValid();
+        }
+        
+        protected IEnumerable<DTOObject> Results { get; set; }
+        
+        protected DTOObject Result { get; set; }
+        
+        protected IDataReader DataReader { get; set; }
+
+        protected IMapper Mapper { get; }
+    }
+
+    internal class SnakeCaseFieldName
+    {
+        public const String SmallInt = "small_integer";
+        public const String Int = "integer";
+        public const String BigInt = "big_integer";
+        public const String Guid = "guid";
+        public const String Float = "float";
+        public const String Double = "double";
+        public const String Decimal = "decimal";
+        public const String DateTime = "date_time";
+        public const String Byte = "byte";
+        public const String ByteArray = "byte_array";
+        public const String Boolean = "boolean";
+        public const String Something = "something";
+        public const String DateTimeOffset = "date_time_offset";
+    }
+    
+   internal class FieldName
     {
         public const String SmallInt = "SmallInteger";
         public const String Int = "Integer";
@@ -723,7 +852,43 @@
 
             return authorizationSetDataTable.CreateDataReader();
         }
+        
+        public IDataReader BuildSnakeCaseDataReader()
+        {
+            var authorizationSetDataTable = new DataTable();
+            authorizationSetDataTable.Columns.Add(SnakeCaseFieldName.SmallInt, typeof(Int16));
+            authorizationSetDataTable.Columns.Add(SnakeCaseFieldName.Int, typeof(Int32));
+            authorizationSetDataTable.Columns.Add(SnakeCaseFieldName.BigInt, typeof(Int64));
+            authorizationSetDataTable.Columns.Add(SnakeCaseFieldName.Guid, typeof(Guid));
+            authorizationSetDataTable.Columns.Add(SnakeCaseFieldName.Float, typeof(float));
+            authorizationSetDataTable.Columns.Add(SnakeCaseFieldName.Double, typeof(Double));
+            authorizationSetDataTable.Columns.Add(SnakeCaseFieldName.Decimal, typeof(Decimal));
+            authorizationSetDataTable.Columns.Add(SnakeCaseFieldName.DateTime, typeof(DateTime));
+            authorizationSetDataTable.Columns.Add(SnakeCaseFieldName.Byte, typeof(Byte));
+            authorizationSetDataTable.Columns.Add(SnakeCaseFieldName.Boolean, typeof(Boolean));
+            authorizationSetDataTable.Columns.Add(SnakeCaseFieldName.Something, typeof(DateTime));
+            authorizationSetDataTable.Columns.Add(SnakeCaseFieldName.ByteArray, typeof(Byte[]));
+            authorizationSetDataTable.Columns.Add(SnakeCaseFieldName.DateTimeOffset, typeof(DateTimeOffset));
 
+            var authorizationSetDataRow = authorizationSetDataTable.NewRow();
+            authorizationSetDataRow[SnakeCaseFieldName.SmallInt] = 22;
+            authorizationSetDataRow[SnakeCaseFieldName.Int] = 6134;
+            authorizationSetDataRow[SnakeCaseFieldName.BigInt] = 61346154;
+            authorizationSetDataRow[SnakeCaseFieldName.Guid] = Guid.NewGuid();
+            authorizationSetDataRow[SnakeCaseFieldName.Float] = 642.61;
+            authorizationSetDataRow[SnakeCaseFieldName.Double] = 67164.64;
+            authorizationSetDataRow[SnakeCaseFieldName.Decimal] = 94341.61;
+            authorizationSetDataRow[SnakeCaseFieldName.DateTime] = DateTime.Now;
+            authorizationSetDataRow[SnakeCaseFieldName.Byte] = 0x12;
+            authorizationSetDataRow[SnakeCaseFieldName.Boolean] = true;
+            authorizationSetDataRow[SnakeCaseFieldName.Something] = DateTime.MaxValue;
+            authorizationSetDataRow[SnakeCaseFieldName.ByteArray] = new Byte[] { 0x01, 0x02, 0x03, 0x04 };
+            authorizationSetDataRow[SnakeCaseFieldName.DateTimeOffset] = new DateTimeOffset(2000, 7, 4, 6, 31, 45, new TimeSpan(-5, 30, 0));
+            authorizationSetDataTable.Rows.Add(authorizationSetDataRow);
+
+            return authorizationSetDataTable.CreateDataReader();
+        }
+        
         public IDataRecord BuildDataRecord()
         {
             var dataReader = BuildDataReader();
