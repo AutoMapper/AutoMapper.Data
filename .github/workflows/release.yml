@@ -4,14 +4,17 @@ on:
   push:
     tags:
     - '*.*.*'
+permissions:
+  contents: read
+
 jobs:
   build:
     strategy:
       fail-fast: false
-    runs-on: windows-2022
+    runs-on: windows-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
     - name: Build and Test
@@ -30,7 +33,7 @@ jobs:
       run: ./Push.ps1
       shell: pwsh
     - name: Artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: artifacts
         path: artifacts/**/*
