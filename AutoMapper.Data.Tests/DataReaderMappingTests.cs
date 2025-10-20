@@ -1,5 +1,6 @@
 ﻿namespace AutoMapper.Data.Tests
 {
+    using Microsoft.Extensions.Logging.Abstractions;
     using System;
     using System.Collections.Generic;
     using System.Data;
@@ -18,7 +19,7 @@
 
                 cfg.CreateMap<IDataRecord, DTOObject>()
                     .ForMember(dest => dest.Else, options => options.MapFrom(src => src.GetDateTime(10)));
-            });
+            }, new NullLoggerFactory());
 
             Mapper = new Mapper(configuration);
             DataReader = new DataBuilder().BuildDataReader();
@@ -122,14 +123,14 @@
     {
         public When_mapping_a_data_reader_to_matching_dtos()
         {
-             MapperConfiguration configuration = new MapperConfiguration(cfg =>{
-                 cfg.AddDataReaderMapping();
+            MapperConfiguration configuration = new MapperConfiguration(cfg => {
+                cfg.AddDataReaderMapping();
 
-                 cfg.CreateMap<IDataRecord, DTOObject>()
-                     .ForMember(dest => dest.Else, options => options.MapFrom(src => src.GetDateTime(10)));
-                 cfg.CreateMap<IDataRecord, DerivedDTOObject>()
-                     .ForMember(dest => dest.Else, options => options.MapFrom(src => src.GetDateTime(10)));
-             });
+                cfg.CreateMap<IDataRecord, DTOObject>()
+                    .ForMember(dest => dest.Else, options => options.MapFrom(src => src.GetDateTime(10)));
+                cfg.CreateMap<IDataRecord, DerivedDTOObject>()
+                    .ForMember(dest => dest.Else, options => options.MapFrom(src => src.GetDateTime(10)));
+            }, new NullLoggerFactory());
 
             _mapper = new Mapper(configuration);
             _mapper.Map<IDataReader, IEnumerable<DTOObject>>(new DataBuilder().BuildDataReader()).ToArray();
@@ -155,7 +156,7 @@
     /// </summary>
     public class When_mapping_a_data_reader_to_a_dto_twice : When_mapping_a_data_reader_to_a_dto
     {
-        public When_mapping_a_data_reader_to_a_dto_twice() 
+        public When_mapping_a_data_reader_to_a_dto_twice()
         {
             DataReader = new DataBuilder().BuildDataReader();
             Results = Mapper.Map<IDataReader, IEnumerable<DTOObject>>(DataReader);
@@ -187,8 +188,8 @@
     {
         public When_mapping_a_data_reader_to_a_dto_and_the_map_does_not_exist()
         {
-            MapperConfiguration configuration = 
-                new MapperConfiguration(cfg => cfg.Internal().Mappers.Insert(0, new DataReaderMapper()));
+            MapperConfiguration configuration =
+                new MapperConfiguration(cfg => cfg.Internal().Mappers.Insert(0, new DataReaderMapper()), new NullLoggerFactory());
 
             _mapper = new Mapper(configuration);
             _dataReader = new DataBuilder().BuildDataReader();
@@ -224,7 +225,7 @@
 
                 cfg.CreateMap<IDataRecord, DTOObject>()
                     .ForMember(dest => dest.Else, options => options.MapFrom(src => src.GetDateTime(src.GetOrdinal(FieldName.Something))));
-            });
+            }, new NullLoggerFactory());
 
             _mapper = new Mapper(configuration);
             _dataRecord = new DataBuilder().BuildDataRecord();
@@ -345,7 +346,7 @@
                 cfg.AddDataReaderMapping();
 
                 cfg.CreateMap<IDataReader, DtoWithSingleNullableField>();
-            });
+            }, new NullLoggerFactory());
             _mapper = new Mapper(configuration);
 
             _dataReader = new DataBuilder().BuildDataReaderWithNullableField();
@@ -426,7 +427,7 @@
                 cfg.AddDataReaderMapping();
 
                 cfg.CreateMap<IDataReader, DtoWithSingleNullableField>();
-            });
+            }, new NullLoggerFactory());
             _mapper = new Mapper(configuration);
 
             _dataReader = new DataBuilder().BuildDataReaderWithNullableField();
@@ -524,7 +525,7 @@
                 cfg.AddDataReaderMapping();
 
                 cfg.CreateMap<IDataRecord, DtoWithNestedClass>();
-            });
+            }, new NullLoggerFactory());
 
             _mapper = new Mapper(configuration);
             _dataReader = new DataBuilder().BuildDataReaderWithNestedClass();
@@ -593,7 +594,7 @@
                 cfg.AddDataReaderMapping();
 
                 cfg.CreateMap<IDataRecord, DtoWithMoreColumnsThanDataReader>();
-            });
+            }, new NullLoggerFactory());
 
             _mapper = new Mapper(configuration);
             _dataReader = new DataBuilder().BuildDataReaderWithMissingColumns();
@@ -618,7 +619,7 @@
         private IMapper _mapper;
     }
 
-   public class When_mapping_a_data_reader_to_a_dto_with_an_interface_member
+    public class When_mapping_a_data_reader_to_a_dto_with_an_interface_member
     {
         private const string FieldName = "Name";
         private const string FieldValue = "Value";
@@ -656,7 +657,7 @@
             {
                 cfg.AddDataReaderMapping();
                 cfg.CreateMap<IDataRecord, NoneSuch>();
-            });
+            }, new NullLoggerFactory());
 
             var mapper = new Mapper(configuration);
             var dataReader = DataBuilder.BuildDataReader();
