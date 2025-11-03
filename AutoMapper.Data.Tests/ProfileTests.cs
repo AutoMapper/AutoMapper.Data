@@ -1,5 +1,6 @@
 ﻿namespace AutoMapper.Data.Tests
 {
+    using Microsoft.Extensions.Logging.Abstractions;
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
@@ -10,9 +11,9 @@
     {
         public ProfileTestsBase()
         {
-            MapperConfiguration configuration = new MapperConfiguration(cfg =>{
+            MapperConfiguration configuration = new MapperConfiguration(cfg => {
                 ConfigureMapper(cfg);
-            });
+            }, new NullLoggerFactory());
 
             Mapper = new Mapper(configuration);
             DataReader = new DataBuilder().BuildDataReader();
